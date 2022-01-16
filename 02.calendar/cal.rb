@@ -1,6 +1,30 @@
 #!/usr/bin/env ruby
 
 require 'date'
+require 'optparse'
+
+defaultYear = Date.today.year
+defaultMonth = Date.today.month
+
+@inputYear = defaultYear
+@inputMonth = defaultMonth
+
+# -m で month の引数を取得する
+# -y で year の引数を取得する
+def recognizeOptions
+  # TODO(yamatatsu): 他のオプションがきたときの例外をキャッチする
+  # TODO(yamatatsu): オプションが指定されていないときに、デフォルトの引数を設定する
+  option = OptionParser.new
+
+  option.on('-y VAL') {|year|
+    # string が渡ってくるので int に変換
+    @inputYear = year.to_i
+  }
+  option.on('-m VAL') { |month|
+    @inputMonth = month.to_i
+  }
+  option.parse!(ARGV)s
+end
 
 # [月・年] を表示
 def print_month_year(inputDate)
@@ -43,6 +67,10 @@ def print_dates(inputDate)
   end
 end
 
-print_month_year(Date.new(2022, 12))
+
+recognizeOptions
+print_month_year(Date.new(@inputYear, @inputMonth))
 print_day_of_week
-print_dates(Date.new(2022, 12))
+print_dates(Date.new(@inputYear, @inputMonth))
+
+
