@@ -2,10 +2,9 @@
 
 require 'date'
 
-# 今日の [月・年] を表示
-def print_today
-  @today = Date.today
-  puts("      #{@today.month}月 #{@today.year}年")
+# [月・年] を表示
+def print_month_year(inputDate)
+  puts("      #{inputDate.month}月 #{inputDate.year}年")
 end
 
 # 曜日を表示
@@ -42,7 +41,6 @@ def print_dates(inputDate)
   end
 end
 
-print_today
+print_month_year(Date.new(2022, 12))
 print_day_of_week
-
-print_dates(Date.new(2021, 1))
+print_dates(Date.new(2022, 12))
