@@ -37,19 +37,19 @@ def recognize_options
   begin
     option.parse!(ARGV)
   rescue => exception
-    puts "-m, -y 以外のオプションは指定できません\n"
-    puts "\n"
+    puts '-m, -y 以外のオプションは指定できません\n'
+    puts '\n'
   end
 end
 
 # [月・年] を表示
 def print_month_year(input_date)
-  puts("      #{input_date.month}月 #{input_date.year}年")
+  puts('      #{input_date.month}月 #{input_date.year}年')
 end
 
 # 曜日を表示
 def print_day_of_week
-  puts(" 日 月 火 水 木 金 土")
+  puts(' 日 月 火 水 木 金 土')
 end
 
 # Dateから日付を表示する
@@ -62,27 +62,27 @@ def print_dates(input_date)
 
     # 数字が一桁の場合、インデントがずれるため空文字を先頭に追加
     if (@print_day.length == 1)
-      @print_day.insert(0, " ")
+      @print_day.insert(0, ' ')
     end
 
     # 最初の日付(1日)の場合はインデントを調整する
     if (date.mday == 1 && date.wday != 0)
-      print("   " * date.wday)
+      print('   ' * date.wday)
     end
 
     # 土曜日の後は改行する
     if (date.saturday?)
-      @print_day = @print_day + "\n"
+      @print_day = @print_day + '\n'
     end
 
-    # " " の空文字を入れることで前の数字とのスペースを作成
-    print(" ")
+    # ' ' の空文字を入れることで前の数字とのスペースを作成
+    print(' ')
 
     if (date.year == Date.today.year && date.month == Date.today.month && date.mday == Date.today.mday)
       # 出力を反転させる [Rubyで出力に色を付ける方法 - Qiita](https://qiita.com/khotta/items/9233a9ffeae68b58d84f)
-      print "\e[7m" # 7は反転
+      print '\e[7m' # 7は反転
       print(@print_day)
-      print "\e[0m" # 0 は取り消し
+      print '\e[0m' # 0 は取り消し
     else
       # print の出力は改行しない
       print(@print_day)
