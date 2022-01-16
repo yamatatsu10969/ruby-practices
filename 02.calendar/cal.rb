@@ -68,7 +68,7 @@ def print_dates(inputDate)
 
     # 最初の日付(1日)の場合はインデントを調整する
     if (date.mday == 1 && date.wday != 0)
-      @print_day.insert(0, "   " * date.wday)
+      print("   " * date.wday)
     end
 
     # 土曜日の後は改行する
@@ -77,10 +77,17 @@ def print_dates(inputDate)
     end
 
     # " " の空文字を入れることで前の数字とのスペースを作成
-    @print_day.insert(0, " ")
+    print(" ")
 
-    # print の出力は改行しない
-    print(@print_day)
+    if (date.year == Date.today.year && date.month == Date.today.month && date.mday == Date.today.mday)
+      # 出力を反転させる [Rubyで出力に色を付ける方法 - Qiita](https://qiita.com/khotta/items/9233a9ffeae68b58d84f)
+      print "\e[7m" # 7は反転
+      print(@print_day)
+      print "\e[0m" # 0 は取り消し
+    else
+      # print の出力は改行しない
+      print(@print_day)
+    end
   end
 end
 
@@ -89,5 +96,3 @@ recognizeOptions
 print_month_year(Date.new(@inputYear, @inputMonth))
 print_day_of_week
 print_dates(Date.new(@inputYear, @inputMonth))
-
-
