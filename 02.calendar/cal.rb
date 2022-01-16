@@ -15,9 +15,9 @@ end
 # Dateから日付を表示する
 def print_dates(inputDate)
   @first_date = Date.new(inputDate.year, inputDate.month, 1)
-  @end_date = Date.new(inputDate.year, inputDate.month, -1)
+  @last_date = Date.new(inputDate.year, inputDate.month, -1)
 
-  for date in @first_date..@end_date
+  for date in @first_date..@last_date
     @print_day = date.mday.to_s
 
     # 数字が一桁の場合、インデントがずれるため空文字を先頭に追加
