@@ -15,15 +15,24 @@ def recognizeOptions
 
   option = OptionParser.new
 
-  # TODO: 少なくとも1970年から2100年までは正しく表示される
   option.on('-y VAL') {|year|
     # string が渡ってくるので int に変換
-    @inputYear = year.to_i
+    inputYear = year.to_i
+    if (1970 <= inputYear && inputYear <= 2100)
+      @inputYear = inputYear
+    else
+      puts '-y(年)は 1970 ~ 2100 を指定してください'
+    end
   }
-  # TODO: 少なくとも1970年から2100年までは正しく表示される
+
   option.on('-m VAL') { |month|
-    @inputMonth = month.to_i
-  }
+    # string が渡ってくるので int に変換
+    inputMonth = month.to_i
+    if (1 <= inputMonth && inputMonth <= 12)
+      @inputMonth = inputMonth
+    else
+      puts '-m(月)は 1 ~ 12 を指定してください'
+    end  }
 
   # 他のオプションがきたときも処理を継続させる
   begin
