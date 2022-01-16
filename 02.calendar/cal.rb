@@ -4,22 +4,20 @@ require 'date'
 require 'optparse'
 
 # 引数がない時のためにデフォルトで今日の年・月を表示する
-defaultYear = Date.today.year
-defaultMonth = Date.today.month
-@inputYear = defaultYear
-@inputMonth = defaultMonth
+default_year = Date.today.year
+default_month = Date.today.month
+@input_year = default_year
+@input_month = default_month
 
 # -m で month の引数を取得する
 # -y で year の引数を取得する
-def recognizeOptions
-
+def recognize_options
   option = OptionParser.new
-
   option.on('-y VAL') {|year|
     # string が渡ってくるので int に変換
-    inputYear = year.to_i
-    if (1970 <= inputYear && inputYear <= 2100)
-      @inputYear = inputYear
+    input_year = year.to_i
+    if (1970 <= input_year && input_year <= 2100)
+      @input_year = input_year
     else
       puts '-y(年)は 1970 ~ 2100 を指定してください'
     end
@@ -27,12 +25,13 @@ def recognizeOptions
 
   option.on('-m VAL') { |month|
     # string が渡ってくるので int に変換
-    inputMonth = month.to_i
-    if (1 <= inputMonth && inputMonth <= 12)
-      @inputMonth = inputMonth
+    input_month = month.to_i
+    if (1 <= input_month && input_month <= 12)
+      @input_month = input_month
     else
       puts '-m(月)は 1 ~ 12 を指定してください'
-    end  }
+    end
+  }
 
   # 他のオプションがきたときも処理を継続させる
   begin
@@ -44,8 +43,8 @@ def recognizeOptions
 end
 
 # [月・年] を表示
-def print_month_year(inputDate)
-  puts("      #{inputDate.month}月 #{inputDate.year}年")
+def print_month_year(input_date)
+  puts("      #{input_date.month}月 #{input_date.year}年")
 end
 
 # 曜日を表示
@@ -54,9 +53,9 @@ def print_day_of_week
 end
 
 # Dateから日付を表示する
-def print_dates(inputDate)
-  @first_date = Date.new(inputDate.year, inputDate.month, 1)
-  @last_date = Date.new(inputDate.year, inputDate.month, -1)
+def print_dates(input_date)
+  @first_date = Date.new(input_date.year, input_date.month, 1)
+  @last_date = Date.new(input_date.year, input_date.month, -1)
 
   for date in @first_date..@last_date
     @print_day = date.mday.to_s
@@ -91,8 +90,7 @@ def print_dates(inputDate)
   end
 end
 
-
-recognizeOptions
-print_month_year(Date.new(@inputYear, @inputMonth))
+recognize_options
+print_month_year(Date.new(@input_year, @input_month))
 print_day_of_week
-print_dates(Date.new(@inputYear, @inputMonth))
+print_dates(Date.new(@input_year, @input_month))
