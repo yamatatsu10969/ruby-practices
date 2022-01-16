@@ -3,27 +3,35 @@
 require 'date'
 require 'optparse'
 
+# 引数がない時のためにデフォルトで今日の年・月を表示する
 defaultYear = Date.today.year
 defaultMonth = Date.today.month
-
 @inputYear = defaultYear
 @inputMonth = defaultMonth
 
 # -m で month の引数を取得する
 # -y で year の引数を取得する
 def recognizeOptions
-  # TODO(yamatatsu): 他のオプションがきたときの例外をキャッチする
-  # TODO(yamatatsu): オプションが指定されていないときに、デフォルトの引数を設定する
+
   option = OptionParser.new
 
+  # TODO: 少なくとも1970年から2100年までは正しく表示される
   option.on('-y VAL') {|year|
     # string が渡ってくるので int に変換
     @inputYear = year.to_i
   }
+  # TODO: 少なくとも1970年から2100年までは正しく表示される
   option.on('-m VAL') { |month|
     @inputMonth = month.to_i
   }
-  option.parse!(ARGV)s
+
+  # 他のオプションがきたときも処理を継続させる
+  begin
+    option.parse!(ARGV)
+  rescue => exception
+    puts "-m, -y 以外のオプションは指定できません\n"
+    puts "\n"
+  end
 end
 
 # [月・年] を表示
