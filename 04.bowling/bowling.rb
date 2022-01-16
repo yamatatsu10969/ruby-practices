@@ -39,9 +39,7 @@ p frame_scores
 
 frame_scores.map!.with_index do |scores, frame_index|
   p frame_index
-  if frame_index == 9
-    next scores
-  end
+  next scores if frame_index == 9
 
   next_frame_score = frame_scores[frame_index + 1]
   if scores.include?(strike_sign)
@@ -62,10 +60,9 @@ end
 
 p frame_scores
 
-
 # すべて数字に変更
 frame_scores.map! do |scores|
-  scores.map! do | score |
+  scores.map! do |score|
     if score == strike_sign
       next 10
     else
