@@ -1,13 +1,5 @@
 # frozen_string_literal: true
 
-# sample_input = "6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,6,4,5" # 139
-
-# sample_input = '0,10,1,5,0,0,0,0,X,X,X,5,1,8,1,0,4' # 107
-# sample_input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,0,0' # 134
-# sample_input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,X,X' # 164
-# sample_input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,1,8' # 144
-# sample_input = 'X,X,X,X,X,X,X,X,X,X,X,X' # 300
-
 @strike_sign = 'X'
 
 # 引数を取得し、配列に変換
@@ -78,6 +70,7 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
   frame_scores
 end
 
+# 合計値を計算
 def calculate_total_score(calcurated_frame_score:)
   # すべて数字に変更
   calcurated_frame_score.map! do |scores|
