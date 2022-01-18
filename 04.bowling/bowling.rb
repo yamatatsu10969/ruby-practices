@@ -5,7 +5,7 @@
 # sample_input = '0,10,1,5,0,0,0,0,X,X,X,5,1,8,1,0,4' # 107
 # sample_input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,0,0' # 134
 # sample_input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,X,X' # 164
-sample_input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,1,8' # 144
+# sample_input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,1,8' # 144
 # sample_input = 'X,X,X,X,X,X,X,X,X,X,X,X' # 300
 
 @strike_sign = 'X'
@@ -42,44 +42,59 @@ def create_frame_scores_array(string_scores)
   frame_scores
 end
 
+# ストライクの場合のスコアを、次のフレームと、その次のフレームから計算
+def calculate_strike_score(next_frame_score:, after_next_frame_score:)
+  if next_frame_score.include?(@strike_sign) && next_frame_score.length == 1
+    # 次のフレームがストライクかつ、length == 1 の時(連続ストライク)は、次の次の１投目が反映される
+    [@strike_sign, @strike_sign, after_next_frame_score[0]]
+  else
+    # 連続ストライク以外は次のフレームの2投を反映
+    [@strike_sign, next_frame_score[0], next_frame_score[1]]
+  end
+end
+
+# スペアのスコアの計算
+def calculate_spare_score(frame_score:, next_frame_score:)
+  frame_score.push(next_frame_score[0]) if [scores[0].to_i, scores[1].to_i].sum == 10
+end
+
+# フレームのスコアに、スペアとストライクによる得点を加算する
+def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
+  frame_scores.map!.with_index do |scores, frame_index|
+    # 最終フレームはそのままスコアを反映
+    next scores if frame_index == 9
+
+    next_frame_score = frame_scores[frame_index + 1]
+    if scores.include?(@strike_sign)
+      next calculate_strike_score(next_frame_score: next_frame_score, after_next_frame_score: frame_scores[frame_index + 2]) if scores.include?(@strike_sign)
+    # スペアの時
+    elsif [scores[0].to_i, scores[1].to_i].sum == 10
+      next calculate_spare_score(frame_score: scores, next_frame_score: next_frame_score[0]) if [scores[0].to_i, scores[1].to_i].sum == 10
+    else
+      next scores
+    end
+  end
+
+  frame_scores
+end
+
+def calculate_total_score(calcurated_frame_score:)
+  # すべて数字に変更
+  calcurated_frame_score.map! do |scores|
+    scores.map! do |score|
+      if score == @strike_sign
+        10
+      else
+        score.to_i
+      end
+    end
+    next scores.sum
+  end
+  calcurated_frame_score.sum
+end
+
+# 実行部分
 string_scores = create_score_array_from_command_argument
 frame_scores = create_frame_scores_array(string_scores)
-
-p frame_scores
-
-frame_scores.map!.with_index do |scores, frame_index|
-  p frame_index
-
-  next scores if frame_index == 9
-
-  next_frame_score = frame_scores[frame_index + 1]
-  if scores.include?(@strike_sign)
-    p 'strike だよ'
-    if next_frame_score.include?(@strike_sign) && next_frame_score.length == 1
-      after_next_frame_score = frame_scores[frame_index + 2]
-      next [@strike_sign, @strike_sign, after_next_frame_score[0]]
-    else
-      next [@strike_sign, next_frame_score[0], next_frame_score[1]]
-    end
-  end
-
-  next scores.push(next_frame_score[0]) if [scores[0].to_i, scores[1].to_i].sum == 10
-
-  next scores
-end
-
-p frame_scores
-
-# すべて数字に変更
-frame_scores.map! do |scores|
-  scores.map! do |score|
-    if score == @strike_sign
-      10
-    else
-      score.to_i
-    end
-  end
-  next scores.sum
-end
-
-p frame_scores.sum
+calcurated_frame_score = create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
+p calculate_total_score(calcurated_frame_score: calcurated_frame_score)
