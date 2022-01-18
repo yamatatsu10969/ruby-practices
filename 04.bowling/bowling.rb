@@ -48,7 +48,7 @@ end
 
 # スペアのスコアの計算
 def calculate_spare_score(frame_score:, next_frame_score:)
-  frame_score.push(next_frame_score[0]) if [scores[0].to_i, scores[1].to_i].sum == 10
+  frame_score.push(next_frame_score[0]) if [frame_score[0].to_i, frame_score[1].to_i].sum == 10
 end
 
 # フレームのスコアに、スペアとストライクによる得点を加算する
