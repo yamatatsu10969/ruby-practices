@@ -18,7 +18,7 @@ def create_score_array_from_command_argument
 end
 
 # フレーム毎のスコアの配列を作成
-# 引数の例： ["1", "X",,,]
+# 引数の例： ["1, 8", "X",,,]
 def create_frame_scores_array(string_scores)
   frame_count = 10
   frame_scores = []
