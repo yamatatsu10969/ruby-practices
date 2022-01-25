@@ -17,11 +17,17 @@ RailsじゃないRubyプログラミングを学ぶ
 
 - 成果物
   - オプションなしの ls コマンドを作成する
+- 条件
+  - [lsコマンドを作る | FJORD BOOT CAMP（フィヨルドブートキャンプ）](https://bootcamp.fjord.jp/pages/ls-command#requirements)
+- 調査
+  - [ ] 条件把握
+  - [ ] ファイルの取得方法を調べる（gem は使わない）
+  - [ ] 実装方法考える
 
 ## 参考
 
 - [【lsコマンド】大きな問題を小さく分解してから取り組む | FJORD BOOT CAMP（フィヨルドブートキャンプ）](https://bootcamp.fjord.jp/pages/279)
-- [【67日目】lsコマンド#8 提出,　wcコマンド#1 仕様確認 | FJORD BOOT CAMP（フィヨルドブートキャンプ）](https://bootcamp.fjord.jp/reports/17617)
+- [【67日目】lsコマンド#8 提出, wcコマンド#1 仕様確認 | FJORD BOOT CAMP（フィヨルドブートキャンプ）](https://bootcamp.fjord.jp/reports/17617)
 - [プログラムを書くときの考え方 | FJORD BOOT CAMP（フィヨルドブートキャンプ）](https://bootcamp.fjord.jp/pages/147)
 
 ### 考え方
