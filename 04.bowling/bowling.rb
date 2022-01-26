@@ -1,6 +1,13 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+def main
+  string_scores = create_score_array_from_command_argument
+  frame_scores = create_frame_scores_array(string_scores)
+  calcurated_frame_score = create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
+  p calculate_total_score(calcurated_frame_score: calcurated_frame_score)
+end
+
 @strike_sign = 'X'
 
 def strike?(frame_score)
@@ -95,8 +102,4 @@ def calculate_total_score(calcurated_frame_score:)
   calcurated_frame_score.sum
 end
 
-# 実行部分
-string_scores = create_score_array_from_command_argument
-frame_scores = create_frame_scores_array(string_scores)
-calcurated_frame_score = create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
-p calculate_total_score(calcurated_frame_score: calcurated_frame_score)
+main
