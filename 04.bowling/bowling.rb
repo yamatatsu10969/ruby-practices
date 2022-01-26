@@ -3,8 +3,12 @@
 
 @strike_sign = 'X'
 
-def strike?(score)
-  score.include?(@strike_sign)
+def strike?(frame_score)
+  frame_score.include?(@strike_sign)
+end
+
+def spare?(frame_score)
+  [frame_score[0].to_i, frame_score[1].to_i].sum == 10
 end
 
 # 引数を取得し、配列に変換
@@ -52,7 +56,7 @@ end
 
 # スペアのスコアの計算
 def calculate_spare_score(frame_score:, next_frame_score:)
-  frame_score.push(next_frame_score[0]) if [frame_score[0].to_i, frame_score[1].to_i].sum == 10
+  frame_score.push(next_frame_score[0])
 end
 
 # フレームのスコアに、スペアとストライクによる得点を加算する
@@ -63,10 +67,10 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
 
     next_frame_score = frame_scores[frame_index + 1]
     if strike?(scores)
-      next calculate_strike_score(next_frame_score: next_frame_score, after_next_frame_score: frame_scores[frame_index + 2]) if strike?(scores)
+      next calculate_strike_score(next_frame_score: next_frame_score, after_next_frame_score: frame_scores[frame_index + 2])
     # スペアの時
-    elsif [scores[0].to_i, scores[1].to_i].sum == 10
-      next calculate_spare_score(frame_score: scores, next_frame_score: next_frame_score[0]) if [scores[0].to_i, scores[1].to_i].sum == 10
+    elsif spare?(scores)
+      next calculate_spare_score(frame_score: scores, next_frame_score: next_frame_score[0])
     else
       next scores
     end
