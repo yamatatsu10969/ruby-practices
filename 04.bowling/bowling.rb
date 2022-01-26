@@ -68,7 +68,7 @@ end
 
 # フレームのスコアに、スペアとストライクによる得点を加算する
 def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
-  frame_scores.map!.with_index do |scores, frame_index|
+  frame_scores.map.with_index do |scores, frame_index|
     next_frame_score = frame_scores[frame_index + 1]
     # 最終フレームはそのままスコアを反映
     if frame_index == 9
@@ -82,24 +82,20 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
       scores
     end
   end
-
-  frame_scores
 end
 
 # 合計値を計算
 def calculate_total_score(calcurated_frame_score:)
   # すべて数字に変更
-  calcurated_frame_score.map! do |scores|
-    scores.map! do |score|
+  calcurated_frame_score.map do |scores|
+    scores.map do |score|
       if score == @strike_sign
         10
       else
         score.to_i
       end
-    end
-    scores.sum
-  end
-  calcurated_frame_score.sum
+    end.sum
+  end.sum
 end
 
 main
