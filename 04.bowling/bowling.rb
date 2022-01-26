@@ -3,6 +3,10 @@
 
 @strike_sign = 'X'
 
+def strike?(score)
+  score.include?(@strike_sign)
+end
+
 # 引数を取得し、配列に変換
 def create_score_array_from_command_argument
   string_score = ARGV[0]
@@ -29,7 +33,7 @@ def create_frame_scores_array(string_scores)
 
     # ストライクが入っている時か、2投投げ終わった時は次のフレーム
     # ただし、10フレーム目は次のフレームがないので含まない
-    current_frame += 1 if (current_scores.include?(@strike_sign) || current_scores.count == 2) && (current_frame != 10)
+    current_frame += 1 if (strike?(current_scores) || current_scores.count == 2) && (current_frame != 10)
   end
 
   frame_scores
@@ -37,7 +41,7 @@ end
 
 # ストライクの場合のスコアを、次のフレームと、その次のフレームから計算
 def calculate_strike_score(next_frame_score:, after_next_frame_score:)
-  if next_frame_score.include?(@strike_sign) && next_frame_score.length == 1
+  if strike?(next_frame_score) && next_frame_score.length == 1
     # 次のフレームがストライクかつ、length == 1 の時(連続ストライク)は、次の次の１投目が反映される
     [@strike_sign, @strike_sign, after_next_frame_score[0]]
   else
@@ -58,8 +62,8 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
     next scores if frame_index == 9
 
     next_frame_score = frame_scores[frame_index + 1]
-    if scores.include?(@strike_sign)
-      next calculate_strike_score(next_frame_score: next_frame_score, after_next_frame_score: frame_scores[frame_index + 2]) if scores.include?(@strike_sign)
+    if strike?(scores)
+      next calculate_strike_score(next_frame_score: next_frame_score, after_next_frame_score: frame_scores[frame_index + 2]) if strike?(scores)
     # スペアの時
     elsif [scores[0].to_i, scores[1].to_i].sum == 10
       next calculate_spare_score(frame_score: scores, next_frame_score: next_frame_score[0]) if [scores[0].to_i, scores[1].to_i].sum == 10
