@@ -4,8 +4,8 @@
 def main
   string_scores = create_score_array_from_command_argument
   frame_scores = create_frame_scores_array(string_scores)
-  calcurated_frame_scores = create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
-  p calculate_total_score(calcurated_frame_score: calcurated_frame_scores)
+  calculated_frame_scores = create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
+  p calculate_total_score(calculated_frame_score: calculated_frame_scores)
 end
 
 @strike_sign = 'X'
@@ -68,8 +68,8 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
   end
 end
 
-def calculate_total_score(calcurated_frame_score:)
-  calcurated_frame_score.map do |scores|
+def calculate_total_score(calculated_frame_score:)
+  calculated_frame_score.map do |scores|
     scores.map do |score|
       if score == @strike_sign
         10
