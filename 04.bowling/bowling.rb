@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+STRIKE_SIGN = 'X'
+STRIKE_SIGN.freeze
+
 def main
   string_scores = create_score_array_from_command_argument
   frame_scores = create_frame_scores_array(string_scores)
@@ -8,10 +11,8 @@ def main
   p calculate_total_score(calculated_frame_score: calculated_frame_scores)
 end
 
-@strike_sign = 'X'
-
 def strike?(frame_score)
-  frame_score.include?(@strike_sign)
+  frame_score.include?(STRIKE_SIGN)
 end
 
 def spare?(frame_score)
@@ -51,11 +52,11 @@ end
 
 def calculate_strike_scores(next_frame_score:, after_next_frame_score:)
   if !after_next_frame_score
-    [@strike_sign, next_frame_score[0], next_frame_score[1]]
+    [STRIKE_SIGN, next_frame_score[0], next_frame_score[1]]
   elsif strike?(next_frame_score)
-    [@strike_sign, @strike_sign, after_next_frame_score[0]]
+    [STRIKE_SIGN, STRIKE_SIGN, after_next_frame_score[0]]
   else
-    [@strike_sign, next_frame_score[0], next_frame_score[1]]
+    [STRIKE_SIGN, next_frame_score[0], next_frame_score[1]]
   end
 end
 
@@ -82,7 +83,7 @@ end
 
 def calculate_total_score(calculated_frame_score:)
   calculated_frame_score.flatten(1).map do |score|
-    if score == @strike_sign
+    if score == STRIKE_SIGN
       10
     else
       score.to_i
