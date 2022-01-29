@@ -50,12 +50,16 @@ def create_frame_scores_array(string_scores)
 end
 
 def calculate_strike_score(next_frame_score:, after_next_frame_score:)
-  if strike?(next_frame_score) && next_frame_score.length == 1
+  if !after_next_frame_score
+    [@strike_sign, next_frame_score[0], next_frame_score[1]]
+  elsif strike?(next_frame_score)
     [@strike_sign, @strike_sign, after_next_frame_score[0]]
   else
     [@strike_sign, next_frame_score[0], next_frame_score[1]]
   end
 end
+
+def two_consecutive_strikes?(next_frame); end
 
 def calculate_spare_score(frame_score:, next_frame_score:)
   frame_score.push(next_frame_score[0])
@@ -67,7 +71,7 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
     if frame_index == 9
       scores
     elsif strike?(scores)
-      calculate_strike_score(next_frame_score: next_frame_score, after_next_frame_score: frame_scores[frame_index + 2])
+      calculate_strike_scores(next_frame_score: next_frame_score, after_next_frame_score: frame_scores[frame_index + 2])
     elsif spare?(scores)
       calculate_spare_score(frame_score: scores, next_frame_score: next_frame_score[0])
     else
