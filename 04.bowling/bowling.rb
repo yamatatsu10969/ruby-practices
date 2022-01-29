@@ -60,8 +60,6 @@ def calculate_strike_scores(next_frame_score:, after_next_frame_score:)
   end
 end
 
-def two_consecutive_strikes?(next_frame); end
-
 def calculate_spare_score(frame_score:, next_frame_score:)
   frame_score.push(next_frame_score[0])
 end
