@@ -80,13 +80,13 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
 end
 
 def calculate_total_score(calculated_frame_score:)
-  calculated_frame_score.flatten(1).map do |score|
+  calculated_frame_score.flatten.sum do |score|
     if score == STRIKE_SIGN
       10
     else
       score.to_i
     end
-  end.sum
+  end
 end
 
 main
