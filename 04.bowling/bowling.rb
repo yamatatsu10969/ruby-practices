@@ -18,6 +18,14 @@ def spare?(frame_score)
   [frame_score[0].to_i, frame_score[1].to_i].sum == 10
 end
 
+def frame_end?(frame_scores)
+  strike?(frame_scores) || frame_scores.count == 2
+end
+
+def last_frame?(frame_count)
+  frame_count == 10
+end
+
 def create_score_array_from_command_argument
   string_score = ARGV[0]
   string_score.split(',')
@@ -35,7 +43,7 @@ def create_frame_scores_array(string_scores)
     current_scores_index = current_frame - 1
     current_scores = frame_scores[current_scores_index]
     current_scores.push(score)
-    current_frame += 1 if (strike?(current_scores) || current_scores.count == 2) && (current_frame != 10)
+    current_frame += 1 if frame_end?(current_scores) && !last_frame?(current_frame)
   end
 
   frame_scores
