@@ -49,7 +49,7 @@ def create_frame_scores_array(string_scores)
   frame_scores
 end
 
-def calculate_strike_score(next_frame_score:, after_next_frame_score:)
+def calculate_strike_scores(next_frame_score:, after_next_frame_score:)
   if !after_next_frame_score
     [@strike_sign, next_frame_score[0], next_frame_score[1]]
   elsif strike?(next_frame_score)
@@ -81,14 +81,12 @@ def create_calculated_frame_score_array_when_spare_or_strike(frame_scores)
 end
 
 def calculate_total_score(calculated_frame_score:)
-  calculated_frame_score.map do |scores|
-    scores.map do |score|
-      if score == @strike_sign
-        10
-      else
-        score.to_i
-      end
-    end.sum
+  calculated_frame_score.flatten(1).map do |score|
+    if score == @strike_sign
+      10
+    else
+      score.to_i
+    end
   end.sum
 end
 
