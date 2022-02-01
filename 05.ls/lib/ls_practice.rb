@@ -19,14 +19,14 @@ class LS
 
     text = %()
 
-    (0..column_item_length).each do |n|
-      (0..(MAX_COLUMN_LENGTH - 1)).map do |i|
-        index = n + i + (i * column_item_length)
-        if (MAX_COLUMN_LENGTH - 1) == i
-          text += files[index].to_s
+    (0..column_item_length).each do |column_index|
+      (0..(MAX_COLUMN_LENGTH - 1)).map do |row_index|
+        file_index = column_index + row_index + (row_index * column_item_length)
+        if (MAX_COLUMN_LENGTH - 1) == row_index
+          text += files[file_index].to_s
           text += "\n"
         else
-          text += format("%-#{max_text_length}s", files[index])
+          text += format("%-#{max_text_length}s", files[file_index])
         end
       end
     end
