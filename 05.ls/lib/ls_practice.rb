@@ -6,12 +6,16 @@ end
 
 class LS
   MAX_ROW_LENGTH = 3
+  MAX_ROW_LENGTH.freeze
+
+  WHITE_SPACE_INDENT_LENGTH = 6
+  WHITE_SPACE_INDENT_LENGTH.freeze
 
   def show
     files = Dir.glob('*')
     row_item_length = files.length / MAX_ROW_LENGTH
 
-    max_text_length = files.map(&:length).max + 6
+    max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
 
     text = %()
 
