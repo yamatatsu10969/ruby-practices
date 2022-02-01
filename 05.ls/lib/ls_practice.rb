@@ -5,24 +5,24 @@ def main
 end
 
 class LS
-  MAX_ROW_LENGTH = 3
-  MAX_ROW_LENGTH.freeze
+  MAX_COLUMN_LENGTH = 3
+  MAX_COLUMN_LENGTH.freeze
 
   WHITE_SPACE_INDENT_LENGTH = 6
   WHITE_SPACE_INDENT_LENGTH.freeze
 
   def show
     files = Dir.glob('*')
-    row_item_length = files.length / MAX_ROW_LENGTH
+    column_item_length = files.length / MAX_COLUMN_LENGTH
 
     max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
 
     text = %()
 
-    (0..row_item_length).each do |n|
-      (0..(MAX_ROW_LENGTH - 1)).map do |i|
-        index = n + i + (i * row_item_length)
-        if (MAX_ROW_LENGTH - 1) == i
+    (0..column_item_length).each do |n|
+      (0..(MAX_COLUMN_LENGTH - 1)).map do |i|
+        index = n + i + (i * column_item_length)
+        if (MAX_COLUMN_LENGTH - 1) == i
           text += files[index].to_s
           text += "\n"
         else
