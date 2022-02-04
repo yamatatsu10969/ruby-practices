@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def main
-  puts LS.new.create_files_and_folders_text_at_current_directory
+  puts LS.new.create_files_and_folders_text
 end
 
 class LS
@@ -11,7 +11,7 @@ class LS
   WHITE_SPACE_INDENT_LENGTH = 6
   WHITE_SPACE_INDENT_LENGTH.freeze
 
-  def create_files_and_folders_text_at_current_directory
+  def create_files_and_folders_text
     files = Dir.glob('*')
     column_item_length = files.length / MAX_COLUMN_LENGTH
 

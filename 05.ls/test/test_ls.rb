@@ -15,6 +15,6 @@ class LsTest < Minitest::Test
       hoge4.txt               hogehogehoge12.txt      hogehogehoge9.txt
       hoge5.txt               hogehogehoge13.txt#{'      '}
     TEXT
-    assert_equal(expected, LS.new.create_files_and_folders_text_at_current_directory)
+    assert_equal(expected, LS.new.create_files_and_folders_text)
   end
 end
