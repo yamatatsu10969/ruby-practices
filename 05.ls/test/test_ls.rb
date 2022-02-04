@@ -13,7 +13,7 @@ class LsTest < Minitest::Test
       hoge2.txt               hogehogehoge10.txt      hogehogehoge7.txt
       hoge3.txt               hogehogehoge11.txt      hogehogehoge8.txt
       hoge4.txt               hogehogehoge12.txt      hogehogehoge9.txt
-      hoge5.txt               hogehogehoge13.txt#{'      '}
+      hoge5.txt               hogehogehoge13.txt
     TEXT
     assert_equal(expected, LS.new.create_files_and_folders_text)
   end
