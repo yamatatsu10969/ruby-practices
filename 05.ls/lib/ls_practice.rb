@@ -13,7 +13,7 @@ class LS
 
   def create_files_and_folders_text
     files = Dir.glob('*')
-    column_item_number = files.length / MAX_COLUMN_NUMBER
+    column_item_number = files.size / MAX_COLUMN_NUMBER
 
     max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
 
