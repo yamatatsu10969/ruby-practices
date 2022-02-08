@@ -26,7 +26,6 @@ class LS
         text += format("%-#{max_text_length}s", files[file_index])
       end
       text_array.push(text)
-      puts text
     end
     text_array.map(&:rstrip).join("\n")
   end
