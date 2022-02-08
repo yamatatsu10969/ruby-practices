@@ -20,7 +20,7 @@ class LS
     text_array = []
 
     (0..column_item_number).each do |column_index|
-      text = %()
+      text = ''
       (0..(MAX_COLUMN_NUMBER - 1)).map do |row_index|
         file_index = column_index + row_index + (row_index * column_item_number)
         text += format("%-#{max_text_length}s", files[file_index])
