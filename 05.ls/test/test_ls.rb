@@ -31,6 +31,8 @@ class LsTest < Minitest::Test
       hoge4.txt               hogehogehoge13.txt
       hoge5.txt               hogehogehoge2.txt
     TEXT
-    assert_equal(expected.rstrip, LS.new.create_files_and_folders_text)
+    ls = LS.new
+    ls.options.push('a')
+    assert_equal(expected.rstrip, ls.create_files_and_folders_text)
   end
 end
