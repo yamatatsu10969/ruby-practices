@@ -3,7 +3,8 @@
 require 'optparse'
 
 def main
-  puts LS.new.create_files_and_folders_text
+  options = LS.recognize_options
+  puts LS.new(options).create_files_and_folders_text
 end
 
 class LS
@@ -13,10 +14,17 @@ class LS
   WHITE_SPACE_INDENT_LENGTH = 6
   WHITE_SPACE_INDENT_LENGTH.freeze
 
-  attr_accessor :options
+  def initialize(options = [])
+    @options = options
+  end
 
-  def initialize
-    @options = recognize_options
+  def self.recognize_options
+    options = []
+    OptionParser.new do |opt|
+      opt.on('-a') { |_| options.push('a') }
+      opt.parse!(ARGV)
+    end
+    options
   end
 
   def create_files_and_folders_text
@@ -46,17 +54,8 @@ class LS
     end
   end
 
-  def recognize_options
-    options = []
-    OptionParser.new do |opt|
-      opt.on('-a') { |_| options.push('a') }
-      opt.parse!(ARGV)
-    end
-    options
-  end
-
   def a_option?
-    options.include?('a')
+    @options.include?('a')
   end
 end
 
