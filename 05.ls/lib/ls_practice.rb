@@ -47,14 +47,14 @@ class LS
   end
 
   def files_and_folders
-    if a_option?
+    if show_files_that_begin_with_dot?
       Dir.glob('*', File::FNM_DOTMATCH)
     else
       Dir.glob('*')
     end
   end
 
-  def a_option?
+  def show_files_that_begin_with_dot?
     @options.include?('a')
   end
 end
