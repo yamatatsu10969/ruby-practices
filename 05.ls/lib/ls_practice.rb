@@ -22,6 +22,7 @@ class LS
     options = []
     OptionParser.new do |opt|
       opt.on('-a') { |_| options.push('a') }
+      opt.on('-r') { |_| options.push('r') }
       opt.parse!(ARGV)
     end
     options
@@ -29,6 +30,8 @@ class LS
 
   def create_files_and_folders_text
     files = files_and_folders
+    files = files.reverse if reverse_order?
+
     column_item_number = files.size / MAX_COLUMN_NUMBER
 
     max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
@@ -56,6 +59,10 @@ class LS
 
   def show_files_that_begin_with_dot?
     @options.include?('a')
+  end
+
+  def reverse_order?
+    @options.include?('r')
   end
 end
 
