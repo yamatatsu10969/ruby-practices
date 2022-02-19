@@ -63,6 +63,16 @@ RailsじゃないRubyプログラミングを学ぶ
       - [「ls -l」コマンドの表示からファイルの属性を理解しよう：“応用力”をつけるためのLinux再入門（9）（3/4 ページ） - ＠IT](https://atmarkit.itmedia.co.jp/ait/articles/1605/18/news015_3.html)
     - `total 8`
       - ブロックサイズ
+      - `diskutil info / | grep "Block Size"`
+        - Device Block Size:         4096 Bytes
+        - Allocation Block Size:     4096 Bytes
+      - 1ブロックが4096
+        - 最小が1ブロックで割り当てられる
+      - 0byte は 0ブロック
+      - 1byte は 1ブロック
+      - 4097byte は2ブロック
+      - １ファイルごとにブロックが与えられる
+        - 1byteのファイルが2つだと、2ブロック割り当てられる
     - `-rwxr-xr-x  1 tatsuyayamamoto  staff   0 Feb 19 10:54 chmod_755_hoge.txt`
       - `d, - , l`
         - d ディレクトリ
