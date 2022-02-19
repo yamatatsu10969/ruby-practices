@@ -48,4 +48,17 @@ class LsTest < Minitest::Test
     TEXT
     assert_equal(expected.rstrip, LS.new(['r']).create_files_and_folders_text)
   end
+
+  def test_ls_with_l_option
+    expected = <<~TEXT
+      total 8
+      -rwxr-xr-x  1 tatsuyayamamoto  staff   0 Feb 19 10:54 chmod_755_hoge.txt
+      -rwxrwxrwx  1 tatsuyayamamoto  staff   0 Feb 19 10:55 chmod_777_hoge.txt
+      -rw-r--r--  1 tatsuyayamamoto  staff  49 Feb 19 10:58 hoge10.txt
+      drwxr-xr-x  3 tatsuyayamamoto  staff  96 Feb 19 11:29 hoge_directory
+      -rw-r--r--  1 root             staff   0 Feb 19 10:54 sudo_hoge.txt
+      lrwxr-xr-x  1 tatsuyayamamoto  staff  13 Feb 19 10:58 symlink_hoge -> sudo_hoge.txt
+    TEXT
+    assert_equal(expected.rstrip, LS.new(['l']).create_files_and_folders_text)
+  end
 end
