@@ -104,7 +104,11 @@ class LS
 
   def to_stat_files(stat_files)
     stat_files.map do |file|
-      File::Stat.new(file)
+      if FileTest.symlink?(file)
+        File.lstat(file)
+      else
+        File.stat(file)
+      end
     end
   end
 
