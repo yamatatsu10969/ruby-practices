@@ -23,6 +23,7 @@ class LS
     OptionParser.new do |opt|
       opt.on('-a') { |_| options.push('a') }
       opt.on('-r') { |_| options.push('r') }
+      opt.on('-l') { |_| options.push('l') }
       opt.parse!(ARGV)
     end
     options
@@ -32,21 +33,22 @@ class LS
     files = files_and_folders
     files = files.reverse if reverse_order?
 
-    column_item_number = files.size / MAX_COLUMN_NUMBER
-
-    max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
-
-    text_array = []
-
-    (0..column_item_number).each do |column_index|
-      text = ''
-      (0..(MAX_COLUMN_NUMBER - 1)).map do |row_index|
-        file_index = column_index + row_index + (row_index * column_item_number)
-        text += format("%-#{max_text_length}s", files[file_index])
+    if show_long_format?
+      long_format_files_and_folders_text(files)
+    else
+      text_array = []
+      column_item_number = files.size / MAX_COLUMN_NUMBER
+      max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
+      (0..column_item_number).each do |column_index|
+        text = ''
+        (0..(MAX_COLUMN_NUMBER - 1)).map do |row_index|
+          file_index = column_index + row_index + (row_index * column_item_number)
+          text += format("%-#{max_text_length}s", files[file_index])
+        end
+        text_array.push(text)
       end
-      text_array.push(text)
+      text_array.map(&:rstrip).join("\n")
     end
-    text_array.map(&:rstrip).join("\n")
   end
 
   def files_and_folders
@@ -63,6 +65,22 @@ class LS
 
   def reverse_order?
     @options.include?('r')
+  end
+
+  def show_long_format?
+    @options.include?('l')
+  end
+
+  def long_format_files_and_folders_text(files)
+    p "total #{total_blocks(files)}"
+    files.map(&:rstrip).join("\n")
+    # format("%#{WHITE_SPACE_INDENT_LENGTH}s %s", file, format_file_or_folder_type(file))
+  end
+
+  def total_blocks(files)
+    files.sum do |file|
+      File::Stat.new(file).blocks
+    end
   end
 end
 
