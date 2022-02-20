@@ -72,8 +72,9 @@ class LS
   end
 
   def long_format_files_and_folders_text(files)
-    p "total #{total_blocks(files)}"
-    files.map(&:rstrip).join("\n")
+    text_array = []
+    text_array.push("total #{total_blocks(files)}")
+    text_array.map(&:rstrip).join("\n")
     # format("%#{WHITE_SPACE_INDENT_LENGTH}s %s", file, format_file_or_folder_type(file))
   end
 
