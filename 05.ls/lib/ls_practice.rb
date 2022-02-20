@@ -3,21 +3,11 @@
 require 'optparse'
 
 def main
-  options = LS.recognize_options
+  options = Option.recognize_options
   puts LS.new(options).create_files_and_folders_text
 end
 
-class LS
-  MAX_COLUMN_NUMBER = 3
-  MAX_COLUMN_NUMBER.freeze
-
-  WHITE_SPACE_INDENT_LENGTH = 6
-  WHITE_SPACE_INDENT_LENGTH.freeze
-
-  def initialize(options = [])
-    @options = options
-  end
-
+module Option
   def self.recognize_options
     options = []
     OptionParser.new do |opt|
@@ -27,6 +17,32 @@ class LS
       opt.parse!(ARGV)
     end
     options
+  end
+
+  def show_files_that_begin_with_dot?
+    @options.include?('a')
+  end
+
+  def reverse_order?
+    @options.include?('r')
+  end
+
+  def show_long_format?
+    @options.include?('l')
+  end
+end
+
+class LS
+  include Option
+
+  MAX_COLUMN_NUMBER = 3
+  MAX_COLUMN_NUMBER.freeze
+
+  WHITE_SPACE_INDENT_LENGTH = 6
+  WHITE_SPACE_INDENT_LENGTH.freeze
+
+  def initialize(options = [])
+    @options = options
   end
 
   def create_files_and_folders_text
@@ -57,18 +73,6 @@ class LS
     else
       Dir.glob('*')
     end
-  end
-
-  def show_files_that_begin_with_dot?
-    @options.include?('a')
-  end
-
-  def reverse_order?
-    @options.include?('r')
-  end
-
-  def show_long_format?
-    @options.include?('l')
   end
 
   def long_format_files_and_folders_text(files)
