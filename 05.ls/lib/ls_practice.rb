@@ -80,14 +80,25 @@ class LS
     stat_files = to_stat_files(files)
     text_array = []
     text_array.push("total #{total_blocks(stat_files)}")
-    p permissions(stat_files)
-    p file_types(stat_files)
-    p hard_link_numbers(stat_files)
-    p user_names(stat_files)
-    p group_names(stat_files)
-    p file_sizes(stat_files)
-    p last_update_date_times(stat_files)
-    p names_and_symlink_names(files)
+    permissions = permissions(stat_files)
+    file_types =  file_types(stat_files)
+    hard_link_numbers = hard_link_numbers(stat_files)
+    user_names = user_names(stat_files)
+    group_names = group_names(stat_files)
+    file_sizes = file_sizes(stat_files)
+    last_update_date_times = last_update_date_times(stat_files)
+    names_and_symlink_names = names_and_symlink_names(files)
+    (0..(files.size - 1)).each do |index|
+      text = ''
+      text += file_types[index] + permissions[index] + '  '
+      text += hard_link_numbers[index].to_s.rjust(hard_link_numbers.map(&:to_s).map(&:length).max) + ' '
+      text += user_names[index].ljust(user_names.map(&:length).max) + '  '
+      text += group_names[index].ljust(group_names.map(&:length).max) + '  '
+      text += file_sizes[index].to_s.rjust(file_sizes.map(&:to_s).map(&:length).max) + ' '
+      text += last_update_date_times[index].ljust(last_update_date_times.map(&:length).max) + ' '
+      text += names_and_symlink_names[index]
+      text_array.push(text)
+    end
     text_array.map(&:rstrip).join("\n")
   end
 
