@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'etc'
 
 def main
   options = Option.recognize_options
@@ -81,35 +82,74 @@ class LS
     text_array.push("total #{total_blocks(stat_files)}")
     p permissions(stat_files)
     p file_types(stat_files)
+    p hard_link_numbers(stat_files)
+    p user_names(stat_files)
+    p group_names(stat_files)
+    p file_sizes(stat_files)
+    p last_update_date_times(stat_files)
+    p names_and_symlink_names(files)
     text_array.map(&:rstrip).join("\n")
-    # format("%#{WHITE_SPACE_INDENT_LENGTH}s %s", file, format_file_or_folder_type(file))
   end
 
-  def to_stat_files(files)
-    files.map do |file|
+  def to_stat_files(stat_files)
+    stat_files.map do |file|
       File::Stat.new(file)
     end
   end
 
-  def total_blocks(files)
-    files.sum(&:blocks)
+  def names_and_symlink_names(files)
+    files.map do |file|
+      if FileTest.symlink?(file)
+        file.to_s + ' -> ' + File.readlink(file.to_s)
+      else
+        file.to_s
+      end
+    end
   end
 
-  def permissions(files)
-    files.map do |file|
+  def total_blocks(stat_files)
+    stat_files.sum(&:blocks)
+  end
+
+  def hard_link_numbers(stat_files)
+    stat_files.map(&:nlink)
+  end
+
+  def user_names(stat_files)
+    stat_files.map do |file|
+      Etc.getpwuid(file.uid).name
+    end
+  end
+
+  def file_sizes(stat_files)
+    stat_files.map(&:size)
+  end
+
+  def group_names(stat_files)
+    stat_files.map do |file|
+      Etc.getgrgid(file.gid).name
+    end
+  end
+
+  def last_update_date_times(stat_files)
+    stat_files.map do |file|
+      file.mtime.strftime('%b %d %H:%M')
+    end
+  end
+
+  def permissions(stat_files)
+    stat_files.map do |file|
       mode = file.mode.to_s(8)
       permission = mode[- 3..]
       file_owner_permission = permission[0].to_i.to_s(2)
       file_group_permission = permission[1].to_i.to_s(2)
       other_permission = permission[2].to_i.to_s(2)
-      p file_owner_permission + file_group_permission + other_permission
-      p to_permission_string(file_owner_permission) + file_group_permission + other_permission
-      # p to_permission_string(file_owner_permission)
+      to_permission_string(file_owner_permission) + to_permission_string(file_group_permission) + to_permission_string(other_permission)
     end
   end
 
   def to_permission_string(permission)
-    text = permission.split('').map.each_with_index do |string, index|
+    permission.split('').map.each_with_index do |string, index|
       if string == '0'
         '-'
       elsif index.zero?
@@ -120,7 +160,6 @@ class LS
         'x'
       end
     end.join('')
-    p text
   end
 
   def file_types(files)
