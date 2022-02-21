@@ -33,4 +33,19 @@ class LsTest < Minitest::Test
     TEXT
     assert_equal(expected.rstrip, LS.new(['a']).create_files_and_folders_text)
   end
+
+  def test_ls_with_r_option
+    expected = <<~TEXT
+      hogehogehoge9.txt       hogehogehoge12.txt      hoge4.txt
+      hogehogehoge8.txt       hogehogehoge11.txt      hoge3.txt
+      hogehogehoge7.txt       hogehogehoge10.txt      hoge2.txt
+      hogehogehoge6.txt       hogehogehoge1.txt       hoge13.txt
+      hogehogehoge5.txt       hoge9.txt               hoge12.txt
+      hogehogehoge4.txt       hoge8.txt               hoge11.txt
+      hogehogehoge3.txt       hoge7.txt               hoge10.txt
+      hogehogehoge2.txt       hoge6.txt               hoge1.txt
+      hogehogehoge13.txt      hoge5.txt
+    TEXT
+    assert_equal(expected.rstrip, LS.new(['r']).create_files_and_folders_text)
+  end
 end
