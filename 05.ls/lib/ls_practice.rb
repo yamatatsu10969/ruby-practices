@@ -140,15 +140,33 @@ module LongFormat
   end
 end
 
-class LS
-  include Option
-  include LongFormat
-
+module ShortFormat
   MAX_COLUMN_NUMBER = 3
   MAX_COLUMN_NUMBER.freeze
 
   WHITE_SPACE_INDENT_LENGTH = 6
   WHITE_SPACE_INDENT_LENGTH.freeze
+
+  def short_format_files_and_folders_text(files)
+    text_array = []
+    column_item_number = files.size / MAX_COLUMN_NUMBER
+    max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
+    (0..column_item_number).each do |column_index|
+      text = ''
+      (0..(MAX_COLUMN_NUMBER - 1)).map do |row_index|
+        file_index = column_index + row_index + (row_index * column_item_number)
+        text += format("%-#{max_text_length}s", files[file_index])
+      end
+      text_array.push(text)
+    end
+    text_array.map(&:rstrip).join("\n")
+  end
+end
+
+class LS
+  include Option
+  include LongFormat
+  include ShortFormat
 
   def initialize(options = [])
     @options = options
@@ -169,23 +187,7 @@ class LS
   def create_files_and_folders_text
     files = files_and_folders
     files = files.reverse if reverse_order?
-
-    if show_long_format?
-      long_format_files_and_folders_text(files)
-    else
-      text_array = []
-      column_item_number = files.size / MAX_COLUMN_NUMBER
-      max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
-      (0..column_item_number).each do |column_index|
-        text = ''
-        (0..(MAX_COLUMN_NUMBER - 1)).map do |row_index|
-          file_index = column_index + row_index + (row_index * column_item_number)
-          text += format("%-#{max_text_length}s", files[file_index])
-        end
-        text_array.push(text)
-      end
-      text_array.map(&:rstrip).join("\n")
-    end
+    show_long_format? ? long_format_files_and_folders_text(files) : short_format_files_and_folders_text(files)
   end
 
   def files_and_folders
