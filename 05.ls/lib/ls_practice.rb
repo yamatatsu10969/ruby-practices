@@ -19,18 +19,6 @@ module Option
     end
     options
   end
-
-  def show_files_that_begin_with_dot?
-    @options.include?('a')
-  end
-
-  def reverse_order?
-    @options.include?('r')
-  end
-
-  def show_long_format?
-    @options.include?('l')
-  end
 end
 
 module PermissionFormat
@@ -164,6 +152,18 @@ class LS
 
   def initialize(options = [])
     @options = options
+  end
+
+  def show_files_that_begin_with_dot?
+    @options.include?('a')
+  end
+
+  def reverse_order?
+    @options.include?('r')
+  end
+
+  def show_long_format?
+    @options.include?('l')
   end
 
   def create_files_and_folders_text
