@@ -4,21 +4,8 @@ require 'optparse'
 require 'etc'
 
 def main
-  options = Option.recognize_options
+  options = LS.recognize_options
   puts LS.new(options).create_files_and_folders_text
-end
-
-module Option
-  def self.recognize_options
-    options = []
-    OptionParser.new do |opt|
-      opt.on('-a') { |_| options.push('a') }
-      opt.on('-r') { |_| options.push('r') }
-      opt.on('-l') { |_| options.push('l') }
-      opt.parse!(ARGV)
-    end
-    options
-  end
 end
 
 module PermissionFormat
@@ -155,12 +142,22 @@ module ShortFormat
 end
 
 class LS
-  include Option
   include LongFormat
   include ShortFormat
 
   def initialize(options = [])
     @options = options
+  end
+
+  def self.recognize_options
+    options = []
+    OptionParser.new do |opt|
+      opt.on('-a') { |_| options.push('a') }
+      opt.on('-r') { |_| options.push('r') }
+      opt.on('-l') { |_| options.push('l') }
+      opt.parse!(ARGV)
+    end
+    options
   end
 
   def show_files_that_begin_with_dot?
