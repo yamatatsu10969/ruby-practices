@@ -22,15 +22,13 @@ module Option
 end
 
 module PermissionFormat
-  def permissions(stat_files)
-    stat_files.map do |file|
-      mode = file.mode.to_s(8)
-      permission = mode[- 3..]
-      file_owner_permission = permission[0].to_i.to_s(2)
-      file_group_permission = permission[1].to_i.to_s(2)
-      other_permission = permission[2].to_i.to_s(2)
-      to_permission_string(file_owner_permission) + to_permission_string(file_group_permission) + to_permission_string(other_permission)
-    end
+  def format_permission(stat_file)
+    mode = stat_file.mode.to_s(8)
+    permission = mode[- 3..]
+    file_owner_permission = permission[0].to_i.to_s(2)
+    file_group_permission = permission[1].to_i.to_s(2)
+    other_permission = permission[2].to_i.to_s(2)
+    to_permission_string(file_owner_permission) + to_permission_string(file_group_permission) + to_permission_string(other_permission)
   end
 
   def to_permission_string(permission)
@@ -50,37 +48,56 @@ end
 
 module LongFormat
   include PermissionFormat
-  def long_format_files_and_folders_text(files)
-    stat_files = to_stat_files(files)
-    text_array = to_file_information_array(stat_files, files)
+  def long_format_text_from(files)
+    stat_files = convert_to_stat_files(files)
+    text_array = ["total #{total_blocks(stat_files)}"] + file_information_hash_from(stat_files, files)
     text_array.map(&:rstrip).join("\n")
   end
 
-  def to_file_information_array(stat_files, files)
-    permissions = permissions(stat_files)
-    file_types = file_types(stat_files)
-    hard_link_numbers = hard_link_numbers(stat_files)
-    user_names = user_names(stat_files)
-    group_names = group_names(stat_files)
-    file_sizes = file_sizes(stat_files)
-    last_update_date_times = last_update_date_times(stat_files)
-    names_and_symlink_names = names_and_symlink_names(files)
-    text_array = ["total #{total_blocks(stat_files)}"]
-    permissions.size.times do |index|
-      text = "#{file_types[index]}#{permissions[index]}  "
-      text += "#{hard_link_numbers[index].to_s.rjust(hard_link_numbers.map(&:to_s).map(&:length).max)} "
-      text += "#{user_names[index].ljust(user_names.map(&:length).max)}  "
-      text += "#{group_names[index].ljust(group_names.map(&:length).max)}  "
-      text += "#{file_sizes[index].to_s.rjust(file_sizes.map(&:to_s).map(&:length).max)} "
-      text += "#{last_update_date_times[index].ljust(last_update_date_times.map(&:length).max)} "
-      text += names_and_symlink_names[index]
-      text_array.push(text)
+  def file_information_hash_from(stat_files, files)
+    file_information_array = []
+    # 1度のループで最大長を取得する
+    hard_link_max_length = 0
+    user_name_max_length =  0
+    group_name_max_length = 0
+    size_max_length = 0
+    stat_files.each_with_index do |stat_file, index|
+      hard_link = stat_file.nlink.to_s
+      hard_link_max_length = hard_link.length if hard_link.length > hard_link_max_length
+      user_name = Etc.getpwuid(stat_file.uid).name
+      user_name_max_length = user_name.length if user_name.length > user_name_max_length
+      group_name = Etc.getgrgid(stat_file.gid).name
+      group_name_max_length = group_name.length if group_name.length > group_name_max_length
+      size = stat_file.size.to_s
+      size_max_length = size.length if size.length > size_max_length
+      file_information_array << {
+        'type' => file_type(stat_file),
+        'permission' => format_permission(stat_file),
+        'hard_link' => hard_link,
+        'user_name' => user_name,
+        'group_name' => group_name,
+        'size' => size,
+        'last_modified_time' => stat_file.mtime.strftime('%b %d %H:%M'),
+        'name' => name_with_symlink(files[index])
+      }
     end
-    text_array
+    file_information_array.map do |file_information|
+      two_indent_array = []
+      two_indent_array << (file_information['type'] + file_information['permission'])
+      two_indent_array << [file_information['hard_link'].to_s.rjust(hard_link_max_length),
+                           file_information['user_name'].ljust(user_name_max_length)].join(' ')
+      two_indent_array << [file_information['group_name'].ljust(group_name_max_length),
+                           file_information['size'].rjust(size_max_length),
+                           file_information['last_modified_time'],
+                           file_information['name']].join(' ')
+      two_indent_array.join('  ')
+    end
   end
 
-  def to_stat_files(stat_files)
-    stat_files.map do |file|
+  def file_information; end
+
+  def convert_to_stat_files(files)
+    files.map do |file|
       if FileTest.symlink?(file)
         File.lstat(file)
       else
@@ -89,13 +106,11 @@ module LongFormat
     end
   end
 
-  def names_and_symlink_names(files)
-    files.map do |file|
-      if FileTest.symlink?(file)
-        "#{file} -> #{File.readlink(file)}"
-      else
-        file.to_s
-      end
+  def name_with_symlink(file)
+    if FileTest.symlink?(file)
+      "#{file} -> #{File.readlink(file)}"
+    else
+      file.to_s
     end
   end
 
@@ -103,39 +118,11 @@ module LongFormat
     stat_files.sum(&:blocks)
   end
 
-  def hard_link_numbers(stat_files)
-    stat_files.map(&:nlink)
-  end
-
-  def user_names(stat_files)
-    stat_files.map do |file|
-      Etc.getpwuid(file.uid).name
-    end
-  end
-
-  def file_sizes(stat_files)
-    stat_files.map(&:size)
-  end
-
-  def group_names(stat_files)
-    stat_files.map do |file|
-      Etc.getgrgid(file.gid).name
-    end
-  end
-
-  def last_update_date_times(stat_files)
-    stat_files.map do |file|
-      file.mtime.strftime('%b %d %H:%M')
-    end
-  end
-
-  def file_types(files)
-    files.map do |file|
-      if file.ftype == 'file'
-        '-'
-      else
-        file.ftype[0]
-      end
+  def file_type(file)
+    if file.ftype == 'file'
+      '-'
+    else
+      file.ftype[0]
     end
   end
 end
@@ -187,7 +174,7 @@ class LS
   def create_files_and_folders_text
     files = files_and_folders
     files = files.reverse if reverse_order?
-    show_long_format? ? long_format_files_and_folders_text(files) : short_format_files_and_folders_text(files)
+    show_long_format? ? long_format_text_from(files) : short_format_files_and_folders_text(files)
   end
 
   def files_and_folders
