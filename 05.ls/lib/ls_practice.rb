@@ -138,7 +138,7 @@ module ShortFormat
   WHITE_SPACE_INDENT_LENGTH = 6
   WHITE_SPACE_INDENT_LENGTH.freeze
 
-  def short_format_files_and_folders_text(files)
+  def short_format_text(files)
     text_array = []
     column_item_number = files.size / MAX_COLUMN_NUMBER
     max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
@@ -178,7 +178,7 @@ class LS
   def create_files_and_folders_text
     files = files_and_folders
     files = files.reverse if reverse_order?
-    show_long_format? ? long_format_text(files) : short_format_files_and_folders_text(files)
+    show_long_format? ? long_format_text(files) : short_format_text(files)
   end
 
   def files_and_folders
