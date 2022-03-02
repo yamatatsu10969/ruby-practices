@@ -50,51 +50,55 @@ module LongFormat
   include PermissionFormat
   def long_format_text(files)
     stat_files = convert_to_stat_files(files)
-    text_array = ["total #{total_blocks(stat_files)}"] + file_information_hash(stat_files, files)
+    file_info_hash = file_info_hash(stat_files, files)
+    text_array = ["total #{total_blocks(stat_files)}"] +
+                 file_info_array(file_info_hash[:file_info_hash_array], file_info_hash[:max_length_hash])
     text_array.map(&:rstrip).join("\n")
   end
 
-  def file_information_hash(stat_files, files)
-    file_information_array = []
+  def file_info_hash(stat_files, files)
     # 1度のループで最大長を取得する
-    hard_link_max_length = 0
-    user_name_max_length =  0
-    group_name_max_length = 0
-    size_max_length = 0
-    stat_files.each_with_index do |stat_file, index|
+    max_length_hash = { hard_link: 0, user_name: 0, group_name: 0, size: 0 }
+    file_info_hash_array = stat_files.map.with_index do |stat_file, index|
       hard_link = stat_file.nlink.to_s
-      hard_link_max_length = hard_link.length if hard_link.length > hard_link_max_length
+      max_length_hash[:hard_link] = hard_link.length if hard_link.length > max_length_hash[:hard_link]
       user_name = Etc.getpwuid(stat_file.uid).name
-      user_name_max_length = user_name.length if user_name.length > user_name_max_length
+      max_length_hash[:user_name] = user_name.length if user_name.length > max_length_hash[:user_name]
       group_name = Etc.getgrgid(stat_file.gid).name
-      group_name_max_length = group_name.length if group_name.length > group_name_max_length
+      max_length_hash[:group_name] = group_name.length if group_name.length > max_length_hash[:group_name]
       size = stat_file.size.to_s
-      size_max_length = size.length if size.length > size_max_length
-      file_information_array << {
-        'type' => file_type(stat_file),
-        'permission' => format_permission(stat_file),
-        'hard_link' => hard_link,
-        'user_name' => user_name,
-        'group_name' => group_name,
-        'size' => size,
-        'last_modified_time' => stat_file.mtime.strftime('%b %d %H:%M'),
-        'name' => name_with_symlink(files[index])
-      }
+      max_length_hash[:size] = size.length if size.length > max_length_hash[:size]
+      { type: file_type(stat_file),
+        permission: format_permission(stat_file),
+        hard_link: hard_link,
+        user_name: user_name,
+        group_name: group_name,
+        size: size,
+        last_modified_time: stat_file.mtime.strftime('%b %d %H:%M'),
+        name: name_with_symlink(files[index]) }
     end
-    file_information_array.map do |file_information|
-      two_indent_array = []
-      two_indent_array << (file_information['type'] + file_information['permission'])
-      two_indent_array << [file_information['hard_link'].to_s.rjust(hard_link_max_length),
-                           file_information['user_name'].ljust(user_name_max_length)].join(' ')
-      two_indent_array << [file_information['group_name'].ljust(group_name_max_length),
-                           file_information['size'].rjust(size_max_length),
-                           file_information['last_modified_time'],
-                           file_information['name']].join(' ')
-      two_indent_array.join('  ')
+    { max_length_hash: max_length_hash, file_info_hash_array: file_info_hash_array }
+  end
+
+  def file_info_array(file_info_hash_array, max_length_hash)
+    file_info_hash_array.map do |file_info|
+      format_file_info(file_info, max_length_hash)
     end
   end
 
-  def file_information; end
+  def format_file_info(file_info_hash, max_length_hash)
+    two_indent_array = []
+    two_indent_array << (file_info_hash[:type] + file_info_hash[:permission])
+    two_indent_array << [file_info_hash[:hard_link].to_s.rjust(max_length_hash[:hard_link]),
+                         file_info_hash[:user_name].ljust(max_length_hash[:user_name])].join(' ')
+    two_indent_array << file_info_hash[:group_name].ljust(max_length_hash[:group_name])
+    two_indent_array << [
+      file_info_hash[:size].rjust(max_length_hash[:size]),
+      file_info_hash[:last_modified_time],
+      file_info_hash[:name]
+    ].join(' ')
+    two_indent_array.join('  ')
+  end
 
   def convert_to_stat_files(files)
     files.map do |file|
