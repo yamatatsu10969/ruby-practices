@@ -48,13 +48,13 @@ end
 
 module LongFormat
   include PermissionFormat
-  def long_format_text_from(files)
+  def long_format_text(files)
     stat_files = convert_to_stat_files(files)
-    text_array = ["total #{total_blocks(stat_files)}"] + file_information_hash_from(stat_files, files)
+    text_array = ["total #{total_blocks(stat_files)}"] + file_information_hash(stat_files, files)
     text_array.map(&:rstrip).join("\n")
   end
 
-  def file_information_hash_from(stat_files, files)
+  def file_information_hash(stat_files, files)
     file_information_array = []
     # 1度のループで最大長を取得する
     hard_link_max_length = 0
@@ -174,7 +174,7 @@ class LS
   def create_files_and_folders_text
     files = files_and_folders
     files = files.reverse if reverse_order?
-    show_long_format? ? long_format_text_from(files) : short_format_files_and_folders_text(files)
+    show_long_format? ? long_format_text(files) : short_format_files_and_folders_text(files)
   end
 
   def files_and_folders
