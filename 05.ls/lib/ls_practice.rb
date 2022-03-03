@@ -74,17 +74,22 @@ module LongFormat
   end
 
   def format_file_info(file_info_hash, max_length_hash)
-    two_indent_array = []
-    two_indent_array << (file_info_hash[:type] + file_info_hash[:permission])
-    two_indent_array << [file_info_hash[:hard_link].to_s.rjust(max_length_hash[:hard_link]),
-                         file_info_hash[:user_name].ljust(max_length_hash[:user_name])].join(' ')
-    two_indent_array << file_info_hash[:group_name].ljust(max_length_hash[:group_name])
-    two_indent_array << [
-      file_info_hash[:size].rjust(max_length_hash[:size]),
-      file_info_hash[:last_modified_time],
-      file_info_hash[:name]
-    ].join(' ')
-    two_indent_array.join('  ')
+    single_white_spaces = ' '
+    two_white_spaces = '  '
+    text = file_info_hash[:type] + file_info_hash[:permission]
+    text += two_white_spaces
+    text += file_info_hash[:hard_link].rjust(max_length_hash[:hard_link])
+    text += single_white_spaces
+    text += file_info_hash[:user_name].ljust(max_length_hash[:user_name])
+    text += two_white_spaces
+    text += file_info_hash[:group_name].ljust(max_length_hash[:group_name])
+    text += two_white_spaces
+    text += file_info_hash[:size].rjust(max_length_hash[:size])
+    text += single_white_spaces
+    text += file_info_hash[:last_modified_time]
+    text += single_white_spaces
+    text += file_info_hash[:name]
+    text
   end
 
   def convert_to_stat_files(files)
