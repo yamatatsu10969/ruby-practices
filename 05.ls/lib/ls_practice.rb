@@ -37,34 +37,37 @@ module LongFormat
   include PermissionFormat
   def long_format_text(files)
     stat_files = convert_to_stat_files(files)
-    file_info_hash = file_info_hash(stat_files, files)
     text_array = ["total #{total_blocks(stat_files)}"] +
-                 file_info_array(file_info_hash[:file_info_hash_array], file_info_hash[:max_length_hash])
+                 file_info_array(file_info_hash(stat_files, files), max_lengths(stat_files))
     text_array.map(&:rstrip).join("\n")
   end
 
   def file_info_hash(stat_files, files)
-    # 1度のループで最大長を取得する
-    max_length_hash = { hard_link: 0, user_name: 0, group_name: 0, size: 0 }
-    file_info_hash_array = stat_files.map.with_index do |stat_file, index|
-      hard_link = stat_file.nlink.to_s
-      max_length_hash[:hard_link] = hard_link.length if hard_link.length > max_length_hash[:hard_link]
-      user_name = Etc.getpwuid(stat_file.uid).name
-      max_length_hash[:user_name] = user_name.length if user_name.length > max_length_hash[:user_name]
-      group_name = Etc.getgrgid(stat_file.gid).name
-      max_length_hash[:group_name] = group_name.length if group_name.length > max_length_hash[:group_name]
-      size = stat_file.size.to_s
-      max_length_hash[:size] = size.length if size.length > max_length_hash[:size]
+    stat_files.map.with_index do |stat_file, index|
       { type: file_type(stat_file),
         permission: format_permission(stat_file),
-        hard_link: hard_link,
-        user_name: user_name,
-        group_name: group_name,
-        size: size,
+        hard_link: stat_file.nlink.to_s,
+        user_name: Etc.getpwuid(stat_file.uid).name,
+        group_name: Etc.getgrgid(stat_file.gid).name,
+        size: stat_file.size.to_s,
         last_modified_time: stat_file.mtime.strftime('%b %d %H:%M'),
         name: name_with_symlink(files[index]) }
     end
-    { max_length_hash: max_length_hash, file_info_hash_array: file_info_hash_array }
+  end
+
+  def max_lengths(stat_files)
+    max_lengths = { hard_link: 0, user_name: 0, group_name: 0, size: 0 }
+    stat_files.each do |stat_file|
+      hard_link = stat_file.nlink.to_s
+      max_lengths[:hard_link] = hard_link.length if hard_link.length > max_lengths[:hard_link]
+      user_name = Etc.getpwuid(stat_file.uid).name
+      max_lengths[:user_name] = user_name.length if user_name.length > max_lengths[:user_name]
+      group_name = Etc.getgrgid(stat_file.gid).name
+      max_lengths[:group_name] = group_name.length if group_name.length > max_lengths[:group_name]
+      size = stat_file.size.to_s
+      max_lengths[:size] = size.length if size.length > max_lengths[:size]
+    end
+    max_lengths
   end
 
   def file_info_array(file_info_hash_array, max_length_hash)
