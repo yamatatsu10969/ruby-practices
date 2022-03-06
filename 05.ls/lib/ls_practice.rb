@@ -36,28 +36,32 @@ end
 module LongFormat
   include PermissionFormat
   def long_format_text(files)
-    stat_files = convert_to_stat_files(files)
-    text_array = ["total #{total_blocks(stat_files)}"] +
-                 file_info_array(file_info_hash(stat_files, files), max_lengths(stat_files))
+    stat_file_hashes = convert_to_stat_file_hashes(files)
+    text_array = ["total #{total_blocks(stat_file_hashes)}"] +
+                 file_info_array(file_info_hash(stat_file_hashes), max_lengths(stat_file_hashes))
     text_array.map(&:rstrip).join("\n")
   end
 
-  def file_info_hash(stat_files, files)
-    stat_files.map.with_index do |stat_file, index|
-      { type: file_type(stat_file),
+  def file_info_hash(stat_file_hashes = {})
+    stat_file_hashes.map do |stat_file_hash|
+      stat_file = stat_file_hash[:stat]
+      {
+        type: file_type(stat_file),
         permission: format_permission(stat_file),
         hard_link: stat_file.nlink.to_s,
         user_name: Etc.getpwuid(stat_file.uid).name,
         group_name: Etc.getgrgid(stat_file.gid).name,
         size: stat_file.size.to_s,
         last_modified_time: stat_file.mtime.strftime('%b %d %H:%M'),
-        name: name_with_symlink(files[index]) }
+        name: name_with_symlink(stat_file_hash[:name])
+      }
     end
   end
 
-  def max_lengths(stat_files)
+  def max_lengths(stat_file_hashes)
     max_lengths = { hard_link: 0, user_name: 0, group_name: 0, size: 0 }
-    stat_files.each do |stat_file|
+    stat_file_hashes.each do |stat_file_hash|
+      stat_file = stat_file_hash[:stat]
       hard_link = stat_file.nlink.to_s
       max_lengths[:hard_link] = hard_link.length if hard_link.length > max_lengths[:hard_link]
       user_name = Etc.getpwuid(stat_file.uid).name
@@ -96,9 +100,9 @@ module LongFormat
     ].join
   end
 
-  def convert_to_stat_files(files)
+  def convert_to_stat_file_hashes(files)
     files.map do |file|
-      FileTest.symlink?(file) ? File.lstat(file) : File.stat(file)
+      FileTest.symlink?(file) ? { stat: File.lstat(file), name: file.to_s } : { stat: File.stat(file), name: file.to_s }
     end
   end
 
@@ -106,8 +110,8 @@ module LongFormat
     FileTest.symlink?(file) ? "#{file} -> #{File.readlink(file)}" : file.to_s
   end
 
-  def total_blocks(stat_files)
-    stat_files.sum(&:blocks)
+  def total_blocks(stat_file_hashes)
+    stat_file_hashes.map { |f| f[:stat] }.sum(&:blocks)
   end
 
   def file_type(file)
