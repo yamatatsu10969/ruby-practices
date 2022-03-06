@@ -76,20 +76,21 @@ module LongFormat
   def format_file_info(file_info_hash, max_length_hash)
     single_white_spaces = ' '
     two_white_spaces = '  '
-    text = file_info_hash[:type] + file_info_hash[:permission]
-    text += two_white_spaces
-    text += file_info_hash[:hard_link].rjust(max_length_hash[:hard_link])
-    text += single_white_spaces
-    text += file_info_hash[:user_name].ljust(max_length_hash[:user_name])
-    text += two_white_spaces
-    text += file_info_hash[:group_name].ljust(max_length_hash[:group_name])
-    text += two_white_spaces
-    text += file_info_hash[:size].rjust(max_length_hash[:size])
-    text += single_white_spaces
-    text += file_info_hash[:last_modified_time]
-    text += single_white_spaces
-    text += file_info_hash[:name]
-    text
+    [
+      file_info_hash[:type] + file_info_hash[:permission],
+      two_white_spaces,
+      file_info_hash[:hard_link].rjust(max_length_hash[:hard_link]),
+      single_white_spaces,
+      file_info_hash[:user_name].ljust(max_length_hash[:user_name]),
+      two_white_spaces,
+      file_info_hash[:group_name].ljust(max_length_hash[:group_name]),
+      two_white_spaces,
+      file_info_hash[:size].rjust(max_length_hash[:size]),
+      single_white_spaces,
+      file_info_hash[:last_modified_time],
+      single_white_spaces,
+      file_info_hash[:name]
+    ].join
   end
 
   def convert_to_stat_files(files)
