@@ -37,9 +37,9 @@ module LongFormat
   include PermissionFormat
   def long_format_text(files)
     stat_file_hashes = convert_to_stat_file_hashes(files)
-    text_array = ["total #{total_blocks(stat_file_hashes)}"] +
-                 long_format_texts(formatted_stat_files(stat_file_hashes), max_lengths(stat_file_hashes))
-    text_array.map(&:rstrip).join("\n")
+    texts = ["total #{total_blocks(stat_file_hashes)}"] +
+            long_format_texts(formatted_stat_files(stat_file_hashes), max_lengths(stat_file_hashes))
+    texts.map(&:rstrip).join("\n")
   end
 
   def formatted_stat_files(stat_file_hashes = {})
@@ -127,7 +127,7 @@ module ShortFormat
   WHITE_SPACE_INDENT_LENGTH.freeze
 
   def short_format_text(files)
-    text_array = []
+    formatted_texts = []
     column_item_number = files.size / MAX_COLUMN_NUMBER
     max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
     (0..column_item_number).each do |column_index|
@@ -136,9 +136,9 @@ module ShortFormat
         file_index = column_index + row_index + (row_index * column_item_number)
         text += format("%-#{max_text_length}s", files[file_index])
       end
-      text_array.push(text)
+      formatted_texts.push(text)
     end
-    text_array.map(&:rstrip).join("\n")
+    formatted_texts.map(&:rstrip).join("\n")
   end
 end
 
