@@ -115,11 +115,7 @@ module LongFormat
   end
 
   def file_type(file)
-    if file.ftype == 'file'
-      '-'
-    else
-      file.ftype[0]
-    end
+    file.ftype == 'file' ? '-' : file.ftype[0]
   end
 end
 
