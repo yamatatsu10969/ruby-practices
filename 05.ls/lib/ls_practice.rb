@@ -38,11 +38,11 @@ module LongFormat
   def long_format_text(files)
     stat_file_hashes = convert_to_stat_file_hashes(files)
     text_array = ["total #{total_blocks(stat_file_hashes)}"] +
-                 file_info_array(file_info_hash(stat_file_hashes), max_lengths(stat_file_hashes))
+                 long_format_texts(formatted_stat_files(stat_file_hashes), max_lengths(stat_file_hashes))
     text_array.map(&:rstrip).join("\n")
   end
 
-  def file_info_hash(stat_file_hashes = {})
+  def formatted_stat_files(stat_file_hashes = {})
     stat_file_hashes.map do |stat_file_hash|
       stat_file = stat_file_hash[:stat]
       {
@@ -74,29 +74,29 @@ module LongFormat
     max_lengths
   end
 
-  def file_info_array(file_info_hash_array, max_length_hash)
-    file_info_hash_array.map do |file_info|
-      format_file_info(file_info, max_length_hash)
+  def long_format_texts(formatted_stat_files, max_length)
+    formatted_stat_files.map do |stat_file|
+      format_long_text(stat_file, max_length)
     end
   end
 
-  def format_file_info(file_info_hash, max_length_hash)
+  def format_long_text(stat_file, max_length)
     single_white_spaces = ' '
     two_white_spaces = '  '
     [
-      file_info_hash[:type] + file_info_hash[:permission],
+      stat_file[:type] + stat_file[:permission],
       two_white_spaces,
-      file_info_hash[:hard_link].rjust(max_length_hash[:hard_link]),
+      stat_file[:hard_link].rjust(max_length[:hard_link]),
       single_white_spaces,
-      file_info_hash[:user_name].ljust(max_length_hash[:user_name]),
+      stat_file[:user_name].ljust(max_length[:user_name]),
       two_white_spaces,
-      file_info_hash[:group_name].ljust(max_length_hash[:group_name]),
+      stat_file[:group_name].ljust(max_length[:group_name]),
       two_white_spaces,
-      file_info_hash[:size].rjust(max_length_hash[:size]),
+      stat_file[:size].rjust(max_length[:size]),
       single_white_spaces,
-      file_info_hash[:last_modified_time],
+      stat_file[:last_modified_time],
       single_white_spaces,
-      file_info_hash[:name]
+      stat_file[:name]
     ].join
   end
 
