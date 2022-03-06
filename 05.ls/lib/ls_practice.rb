@@ -95,20 +95,12 @@ module LongFormat
 
   def convert_to_stat_files(files)
     files.map do |file|
-      if FileTest.symlink?(file)
-        File.lstat(file)
-      else
-        File.stat(file)
-      end
+      FileTest.symlink?(file) ? File.lstat(file) : File.stat(file)
     end
   end
 
   def name_with_symlink(file)
-    if FileTest.symlink?(file)
-      "#{file} -> #{File.readlink(file)}"
-    else
-      file.to_s
-    end
+    FileTest.symlink?(file) ? "#{file} -> #{File.readlink(file)}" : file.to_s
   end
 
   def total_blocks(stat_files)
@@ -181,11 +173,7 @@ class LS
   end
 
   def files_and_folders
-    if show_files_that_begin_with_dot?
-      Dir.glob('*', File::FNM_DOTMATCH)
-    else
-      Dir.glob('*')
-    end
+    show_files_that_begin_with_dot? ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
   end
 end
 
