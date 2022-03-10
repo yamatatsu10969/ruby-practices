@@ -9,16 +9,16 @@ def main
 end
 
 module PermissionFormat
-  def format_permission(stat_file)
+  def get_format_permission(stat_file)
     mode = stat_file.mode.to_s(8)
     permission = mode[- 3..]
     file_owner_permission = permission[0].to_i.to_s(2)
     file_group_permission = permission[1].to_i.to_s(2)
     other_permission = permission[2].to_i.to_s(2)
-    to_permission_string(file_owner_permission) + to_permission_string(file_group_permission) + to_permission_string(other_permission)
+    convert_to_permission_string(file_owner_permission) + convert_to_permission_string(file_group_permission) + convert_to_permission_string(other_permission)
   end
 
-  def to_permission_string(permission)
+  def convert_to_permission_string(permission)
     permission.split('').map.each_with_index do |string, index|
       if string == '0'
         '-'
@@ -35,30 +35,30 @@ end
 
 module LongFormat
   include PermissionFormat
-  def long_format_text(files)
+  def get_long_format_text(files)
     stat_file_hashes = convert_to_stat_file_hashes(files)
-    texts = ["total #{total_blocks(stat_file_hashes)}"] +
-            long_format_texts(formatted_stat_files(stat_file_hashes), max_lengths(stat_file_hashes))
+    texts = ["total #{get_total_blocks(stat_file_hashes)}"] +
+            get_long_format_texts(get_formatted_stat_files(stat_file_hashes), get_max_lengths(stat_file_hashes))
     texts.map(&:rstrip).join("\n")
   end
 
-  def formatted_stat_files(stat_file_hashes = {})
+  def get_formatted_stat_files(stat_file_hashes = {})
     stat_file_hashes.map do |stat_file_hash|
       stat_file = stat_file_hash[:stat]
       {
-        type: file_type(stat_file),
-        permission: format_permission(stat_file),
+        type: get_file_type(stat_file),
+        permission: get_format_permission(stat_file),
         hard_link: stat_file.nlink.to_s,
         user_name: Etc.getpwuid(stat_file.uid).name,
         group_name: Etc.getgrgid(stat_file.gid).name,
         size: stat_file.size.to_s,
         last_modified_time: stat_file.mtime.strftime('%b %d %H:%M'),
-        name: name_with_symlink(stat_file_hash[:name])
+        name: get_name_with_symlink(stat_file_hash[:name])
       }
     end
   end
 
-  def max_lengths(stat_file_hashes)
+  def get_max_lengths(stat_file_hashes)
     max_lengths = { hard_link: 0, user_name: 0, group_name: 0, size: 0 }
     stat_file_hashes.each do |stat_file_hash|
       stat_file = stat_file_hash[:stat]
@@ -74,7 +74,7 @@ module LongFormat
     max_lengths
   end
 
-  def long_format_texts(formatted_stat_files, max_length)
+  def get_long_format_texts(formatted_stat_files, max_length)
     formatted_stat_files.map do |stat_file|
       format_long_text(stat_file, max_length)
     end
@@ -106,15 +106,15 @@ module LongFormat
     end
   end
 
-  def name_with_symlink(file)
+  def get_name_with_symlink(file)
     FileTest.symlink?(file) ? "#{file} -> #{File.readlink(file)}" : file.to_s
   end
 
-  def total_blocks(stat_file_hashes)
+  def get_total_blocks(stat_file_hashes)
     stat_file_hashes.map { |f| f[:stat] }.sum(&:blocks)
   end
 
-  def file_type(file)
+  def get_file_type(file)
     file.ftype == 'file' ? '-' : file.ftype[0]
   end
 end
@@ -126,7 +126,7 @@ module ShortFormat
   WHITE_SPACE_INDENT_LENGTH = 6
   WHITE_SPACE_INDENT_LENGTH.freeze
 
-  def short_format_text(files)
+  def get_short_format_text(files)
     formatted_texts = []
     column_item_number = files.size / MAX_COLUMN_NUMBER
     max_text_length = files.map(&:length).max + WHITE_SPACE_INDENT_LENGTH
@@ -176,7 +176,7 @@ class LS
   def create_files_and_folders_text
     files = files_and_folders
     files = files.reverse if reverse_order?
-    show_long_format? ? long_format_text(files) : short_format_text(files)
+    show_long_format? ? get_long_format_text(files) : get_short_format_text(files)
   end
 
   def files_and_folders
