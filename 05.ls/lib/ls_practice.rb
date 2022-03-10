@@ -9,7 +9,7 @@ def main
 end
 
 module PermissionFormat
-  def get_format_permission(stat_file)
+  def format_permission(stat_file)
     mode = stat_file.mode.to_s(8)
     permission = mode[- 3..]
     file_owner_permission = permission[0].to_i.to_s(2)
@@ -47,7 +47,7 @@ module LongFormat
       stat_file = stat_file_hash[:stat]
       {
         type: get_file_type(stat_file),
-        permission: get_format_permission(stat_file),
+        permission: format_permission(stat_file),
         hard_link: stat_file.nlink.to_s,
         user_name: Etc.getpwuid(stat_file.uid).name,
         group_name: Etc.getgrgid(stat_file.gid).name,
