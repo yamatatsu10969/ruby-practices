@@ -29,7 +29,7 @@ module PermissionFormat
       else
         'x'
       end
-    end.join('')
+    end.join
   end
 end
 
