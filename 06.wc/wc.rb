@@ -12,15 +12,35 @@ end
 
 def format_from_standard_input
   wc_item = build_wc_item(STDIN.readlines)
-  max_length = build_max_lengths([wc_item])
-  format_wc_item(wc_item, max_length)
+  max_lengths = build_max_lengths([wc_item])
+  format_wc_item(wc_item, max_lengths)
 end
 
 def format_from_paths(paths)
   wc_items = paths.map { |path| build_wc_item(File.readlines(path), path) }
   max_lengths = build_max_lengths(wc_items)
   formatted_wc_items = wc_items.map { |wc_item| format_wc_item(wc_item, max_lengths) }
-  formatted_wc_items.join("\n")
+  body = formatted_wc_items.join("\n")
+
+  if paths.size == 1
+    body
+  else
+    footer = format_total_wc_item(build_total_wc_item(wc_items))
+    [body, footer].join("\n")
+  end
+end
+
+def format_total_wc_item(wc_item)
+  format_wc_item(wc_item, build_max_lengths([wc_item]))
+end
+
+def build_total_wc_item(wc_items)
+  {
+    lines: wc_items.sum { |wc_item| wc_item[:lines] },
+    words: wc_items.sum { |wc_item| wc_item[:words] },
+    bytes: wc_items.sum { |wc_item| wc_item[:bytes] },
+    file: 'total'
+  }
 end
 
 def build_wc_item(readlines, file_path = nil)
