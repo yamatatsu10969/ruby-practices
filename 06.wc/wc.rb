@@ -25,13 +25,10 @@ def format_from_paths(paths)
   if paths.size == 1
     body
   else
-    footer = format_total_wc_item(build_total_wc_item(wc_items))
+    total_wc_item = build_total_wc_item(wc_items)
+    footer = format_wc_item(total_wc_item, build_max_lengths([total_wc_item]))
     [body, footer].join("\n")
   end
-end
-
-def format_total_wc_item(wc_item)
-  format_wc_item(wc_item, build_max_lengths([wc_item]))
 end
 
 def build_total_wc_item(wc_items)
