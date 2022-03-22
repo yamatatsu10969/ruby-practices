@@ -8,7 +8,13 @@ DEFAULT_MAX_LENGTH = 8
 def run_wc
   paths = ARGV
   is_only_lines = OptionParser.getopts('l')['l']
-  paths.empty? ? format_from_standard_input(is_only_lines) : format_from_paths(paths, is_only_lines)
+  if paths.empty?
+    format_from_standard_input(is_only_lines)
+  elsif paths.size == 1
+    format_from_path(paths[0], is_only_lines)
+  else
+    format_from_paths(paths, is_only_lines)
+  end
 end
 
 def format_from_standard_input(is_only_lines)
@@ -17,19 +23,19 @@ def format_from_standard_input(is_only_lines)
   format_wc_item(wc_item, max_lengths, is_only_lines)
 end
 
+def format_from_path(path, is_only_lines)
+  wc_item = build_wc_item(File.readlines(path), path)
+  max_lengths = build_max_lengths([wc_item])
+  format_wc_item(wc_item, max_lengths, is_only_lines)
+end
+
 def format_from_paths(paths, is_only_lines)
   wc_items = paths.map { |path| build_wc_item(File.readlines(path), path) }
   max_lengths = build_max_lengths(wc_items)
   formatted_wc_items = wc_items.map { |wc_item| format_wc_item(wc_item, max_lengths, is_only_lines) }
-  body = formatted_wc_items.join("\n")
-
-  if paths.size == 1
-    body
-  else
-    total_wc_item = build_total_wc_item(wc_items)
-    footer = format_wc_item(total_wc_item, build_max_lengths([total_wc_item]), is_only_lines)
-    [body, footer].join("\n")
-  end
+  total_wc_item = build_total_wc_item(wc_items)
+  formatted_total_item = format_wc_item(total_wc_item, build_max_lengths([total_wc_item]), is_only_lines)
+  [formatted_wc_items, formatted_total_item].join("\n")
 end
 
 def build_total_wc_item(wc_items)
