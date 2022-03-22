@@ -7,16 +7,20 @@ DEFAULT_MAX_LENGTH = 8
 
 def run_wc
   paths = ARGV
-  if paths.empty?
-    wc_item = build_wc_item(STDIN.readlines)
-    max_length = build_max_lengths([wc_item])
-    format_wc_item(wc_item, max_length)
-  else
-    wc_items = paths.map { |path| build_wc_item(File.readlines(path), path) }
-    max_lengths = build_max_lengths(wc_items)
-    formatted_wc_items = wc_items.map { |wc_item| format_wc_item(wc_item, max_lengths) }
-    formatted_wc_items.join("\n")
-  end
+  paths.empty? ? format_from_standard_input : format_from_paths(paths)
+end
+
+def format_from_standard_input
+  wc_item = build_wc_item(STDIN.readlines)
+  max_length = build_max_lengths([wc_item])
+  format_wc_item(wc_item, max_length)
+end
+
+def format_from_paths(paths)
+  wc_items = paths.map { |path| build_wc_item(File.readlines(path), path) }
+  max_lengths = build_max_lengths(wc_items)
+  formatted_wc_items = wc_items.map { |wc_item| format_wc_item(wc_item, max_lengths) }
+  formatted_wc_items.join("\n")
 end
 
 def build_wc_item(readlines, file_path = nil)
