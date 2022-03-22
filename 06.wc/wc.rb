@@ -37,8 +37,9 @@ def format_wc_item(wc_item, max_lengths)
     wc_item[:lines].to_s.rjust(max_lengths[:lines]),
     wc_item[:words].to_s.rjust(max_lengths[:words]),
     wc_item[:bytes].to_s.rjust(max_lengths[:bytes]),
+    ' ',
     wc_item[:file].nil? ? '' : wc_item[:file]
-  ].join(' ').rstrip
+  ].join.rstrip
 end
 
 def build_max_lengths(wc_items)
