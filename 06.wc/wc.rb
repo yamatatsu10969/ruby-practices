@@ -7,26 +7,27 @@ DEFAULT_MAX_LENGTH = 8
 
 def run_wc
   paths = ARGV
-  paths.empty? ? format_from_standard_input : format_from_paths(paths)
+  is_only_lines = OptionParser.getopts('l')['l']
+  paths.empty? ? format_from_standard_input(is_only_lines) : format_from_paths(paths, is_only_lines)
 end
 
-def format_from_standard_input
+def format_from_standard_input(is_only_lines)
   wc_item = build_wc_item(STDIN.readlines)
   max_lengths = build_max_lengths([wc_item])
-  format_wc_item(wc_item, max_lengths)
+  format_wc_item(wc_item, max_lengths, is_only_lines)
 end
 
-def format_from_paths(paths)
+def format_from_paths(paths, is_only_lines)
   wc_items = paths.map { |path| build_wc_item(File.readlines(path), path) }
   max_lengths = build_max_lengths(wc_items)
-  formatted_wc_items = wc_items.map { |wc_item| format_wc_item(wc_item, max_lengths) }
+  formatted_wc_items = wc_items.map { |wc_item| format_wc_item(wc_item, max_lengths, is_only_lines) }
   body = formatted_wc_items.join("\n")
 
   if paths.size == 1
     body
   else
     total_wc_item = build_total_wc_item(wc_items)
-    footer = format_wc_item(total_wc_item, build_max_lengths([total_wc_item]))
+    footer = format_wc_item(total_wc_item, build_max_lengths([total_wc_item]), is_only_lines)
     [body, footer].join("\n")
   end
 end
@@ -49,11 +50,11 @@ def build_wc_item(readlines, file_path = nil)
   }
 end
 
-def format_wc_item(wc_item, max_lengths)
+def format_wc_item(wc_item, max_lengths, is_only_lines)
   [
     wc_item[:lines].to_s.rjust(max_lengths[:lines]),
-    wc_item[:words].to_s.rjust(max_lengths[:words]),
-    wc_item[:bytes].to_s.rjust(max_lengths[:bytes]),
+    is_only_lines ? '' : wc_item[:words].to_s.rjust(max_lengths[:words]),
+    is_only_lines ? '' : wc_item[:bytes].to_s.rjust(max_lengths[:bytes]),
     ' ',
     wc_item[:file].nil? ? '' : wc_item[:file]
   ].join.rstrip
