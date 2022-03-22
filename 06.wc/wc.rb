@@ -29,8 +29,7 @@ def build_wc_item(readlines, file_path = nil)
 end
 
 def format_wc_item(wc_item, max_lengths)
-  p max_lengths
-  p [
+  [
     wc_item[:lines].to_s.rjust(max_lengths[:lines]),
     wc_item[:words].to_s.rjust(max_lengths[:words]),
     wc_item[:bytes].to_s.rjust(max_lengths[:bytes]),
@@ -49,7 +48,7 @@ def build_max_lengths(wc_items)
     max_lengths[:words] = [max_lengths[:words], wc_item[:words].to_s.size].max
     max_lengths[:bytes] = [max_lengths[:bytes], wc_item[:bytes].to_s.size].max
   end
-  p max_lengths
+  max_lengths
 end
 
 puts run_wc
