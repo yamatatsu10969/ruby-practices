@@ -12,7 +12,7 @@ def run_wc
 end
 
 def format_from_standard_input(is_only_lines)
-  wc_item = build_wc_item(STDIN.readlines)
+  wc_item = build_wc_item($stdin.readlines)
   max_lengths = build_max_lengths([wc_item])
   format_wc_item(wc_item, max_lengths, is_only_lines)
 end
