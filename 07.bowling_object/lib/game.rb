@@ -24,21 +24,7 @@ class Game
   def create_frames(text_marks)
     parsed_marks = parse_marks(text_marks)
     frames_marks = create_frames_marks(parsed_marks)
-
-    frames = []
-    frames_marks.each do |marks|
-      case marks.size
-      when 1
-        frames << Frame.new(marks[0])
-      when 2
-        frames << Frame.new(marks[0], marks[1])
-      when 3
-        frames << Frame.new(marks[0], marks[1], marks[2])
-      else
-        raise '不正なフレームです'
-      end
-    end
-    frames
+    frames_marks.map { |marks| Frame.new(*marks) }
   end
 
   def parse_marks(text_marks)
