@@ -32,17 +32,11 @@ class LongStyle
 
   def get_max_lengths(stat_file_hashes)
     max_lengths = { hard_link: 0, user_name: 0, group_name: 0, size: 0 }
-    stat_file_hashes.each do |stat_file_hash|
-      stat_file = stat_file_hash[:stat]
-      hard_link = stat_file.nlink.to_s
-      max_lengths[:hard_link] = hard_link.length if hard_link.length > max_lengths[:hard_link]
-      user_name = Etc.getpwuid(stat_file.uid).name
-      max_lengths[:user_name] = user_name.length if user_name.length > max_lengths[:user_name]
-      group_name = Etc.getgrgid(stat_file.gid).name
-      max_lengths[:group_name] = group_name.length if group_name.length > max_lengths[:group_name]
-      size = stat_file.size.to_s
-      max_lengths[:size] = size.length if size.length > max_lengths[:size]
-    end
+    stat_files = stat_file_hashes.map { |stat_file_hash| stat_file_hash[:stat] }
+    max_lengths[:hard_link] = stat_files.map(&:nlink).map(&:to_s).map(&:length).max
+    max_lengths[:user_name] = stat_files.map { |stat_file| Etc.getpwuid(stat_file.uid).name }.map(&:length).max
+    max_lengths[:group_name] = stat_files.map { |stat_file| Etc.getgrgid(stat_file.gid).name }.map(&:length).max
+    max_lengths[:size] = stat_files.map(&:size).map(&:to_s).map(&:length).max
     max_lengths
   end
 
