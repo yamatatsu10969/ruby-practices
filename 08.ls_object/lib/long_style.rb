@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative './permission_style'
+
 class LongStyle
   def initialize(files)
     @files = files
@@ -19,7 +21,7 @@ class LongStyle
       stat_file = stat_file_hash[:stat]
       {
         type: get_file_type(stat_file),
-        permission: format_permission(stat_file),
+        permission: PermissionStyle.new(stat_file).format,
         hard_link: stat_file.nlink.to_s,
         user_name: Etc.getpwuid(stat_file.uid).name,
         group_name: Etc.getgrgid(stat_file.gid).name,
@@ -82,28 +84,5 @@ class LongStyle
 
   def get_file_type(file)
     file.ftype == 'file' ? '-' : file.ftype[0]
-  end
-
-  def format_permission(stat_file)
-    mode = stat_file.mode.to_s(8)
-    permission = mode[- 3..]
-    file_owner_permission = permission[0].to_i.to_s(2)
-    file_group_permission = permission[1].to_i.to_s(2)
-    other_permission = permission[2].to_i.to_s(2)
-    convert_to_permission_string(file_owner_permission) + convert_to_permission_string(file_group_permission) + convert_to_permission_string(other_permission)
-  end
-
-  def convert_to_permission_string(permission)
-    permission.split('').map.each_with_index do |string, index|
-      if string == '0'
-        '-'
-      elsif index.zero?
-        'r'
-      elsif index == 1
-        'w'
-      else
-        'x'
-      end
-    end.join
   end
 end
