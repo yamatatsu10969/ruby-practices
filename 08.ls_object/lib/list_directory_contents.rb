@@ -33,6 +33,6 @@ class ListDirectoryContents
   end
 
   def files_and_folders
-    show_files_with_dot? ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+    Dir.glob('*', show_files_with_dot? ? File::FNM_DOTMATCH : 0)
   end
 end
