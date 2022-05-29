@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './permission_style'
+require_relative './files_converter'
 
 class LongStyle
   def initialize(files)
@@ -8,29 +8,15 @@ class LongStyle
   end
 
   def format
-    stat_file_hashes = convert_to_stat_file_hashes(@files)
+    files_converter = FilesConverter.new(@files)
+    stat_file_hashes = files_converter.to_stat_file_hashes
+    formatted_stat_files = files_converter.to_formatted_stat_files
     texts = ["total #{get_total_blocks(stat_file_hashes)}"] +
-            get_long_format_texts(get_formatted_stat_files(stat_file_hashes), get_max_lengths(stat_file_hashes))
+            get_long_format_texts(formatted_stat_files, get_max_lengths(stat_file_hashes))
     texts.map(&:rstrip).join("\n")
   end
 
   private
-
-  def get_formatted_stat_files(stat_file_hashes = {})
-    stat_file_hashes.map do |stat_file_hash|
-      stat_file = stat_file_hash[:stat]
-      {
-        type: get_file_type(stat_file),
-        permission: PermissionStyle.new(stat_file).format,
-        hard_link: stat_file.nlink.to_s,
-        user_name: Etc.getpwuid(stat_file.uid).name,
-        group_name: Etc.getgrgid(stat_file.gid).name,
-        size: stat_file.size.to_s,
-        last_modified_time: stat_file.mtime.strftime('%b %d %H:%M'),
-        name: get_name_with_symlink(stat_file_hash[:name])
-      }
-    end
-  end
 
   def get_max_lengths(stat_file_hashes)
     max_lengths = { hard_link: 0, user_name: 0, group_name: 0, size: 0 }
@@ -68,21 +54,7 @@ class LongStyle
     ].join
   end
 
-  def convert_to_stat_file_hashes(files)
-    files.map do |file|
-      FileTest.symlink?(file) ? { stat: File.lstat(file), name: file.to_s } : { stat: File.stat(file), name: file.to_s }
-    end
-  end
-
-  def get_name_with_symlink(file)
-    FileTest.symlink?(file) ? "#{file} -> #{File.readlink(file)}" : file.to_s
-  end
-
   def get_total_blocks(stat_file_hashes)
     stat_file_hashes.map { |f| f[:stat] }.sum(&:blocks)
-  end
-
-  def get_file_type(file)
-    file.ftype == 'file' ? '-' : file.ftype[0]
   end
 end
