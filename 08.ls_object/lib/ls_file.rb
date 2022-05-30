@@ -2,19 +2,19 @@
 
 require_relative './permission_style'
 
-class FilesConverter
+class LsFile
   def initialize(files)
     @files = files
   end
 
-  def to_stat_file_hashes
+  def stat_file_hashes
     @files.map do |file|
       FileTest.symlink?(file) ? { stat: File.lstat(file), name: file.to_s } : { stat: File.stat(file), name: file.to_s }
     end
   end
 
-  def to_formatted_stat_files
-    to_stat_file_hashes.map do |stat_file_hash|
+  def formatted_stat_files
+    stat_file_hashes.map do |stat_file_hash|
       stat_file = stat_file_hash[:stat]
       {
         type: get_file_type(stat_file),

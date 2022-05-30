@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './files_converter'
+require_relative './ls_file'
 
 class LongStyle
   def initialize(files)
@@ -8,9 +8,9 @@ class LongStyle
   end
 
   def format
-    files_converter = FilesConverter.new(@files)
-    stat_file_hashes = files_converter.to_stat_file_hashes
-    formatted_stat_files = files_converter.to_formatted_stat_files
+    ls_file = LsFile.new(@files)
+    stat_file_hashes = ls_file.stat_file_hashes
+    formatted_stat_files = ls_file.formatted_stat_files
     texts = ["total #{get_total_blocks(stat_file_hashes)}"] +
             get_long_format_texts(formatted_stat_files, get_max_lengths(stat_file_hashes))
     texts.map(&:rstrip).join("\n")
